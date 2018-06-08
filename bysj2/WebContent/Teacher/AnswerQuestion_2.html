@@ -1,0 +1,236 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../_1/lib/mui/css/mui.min.css" rel="stylesheet" />
+		<link href="css/AnswerQuestion_2.css" rel="stylesheet" />
+		<script src="../_1/lib/mui/js/mui.min.js"></script>
+		<script type="text/javascript" src="../_1/lib/jquery-1.7.2.min.js"></script>
+		<script type="text/javascript" src="../_1/js/Outside.js"></script>
+		<script type="text/javascript" src="../_1/js/Overall.js"></script>
+		<script type="text/javascript" src="../_1/js/StorageKeys.js"></script>
+	</head>
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<button type="button" class="mui-left mui-action-back mui-btn  mui-btn-link mui-btn-nav mui-pull-left">
+					<span class="mui-icon mui-icon-left-nav"></span>返回
+				</button>
+			<h1 class="mui-title">作答详情</h1>
+		</header>
+		<div class="mui-content">
+			<div id="title">
+				<p id="xzq"></p>
+				<p id="xzq1"></p>
+		<div class="tablestyle">
+			<div class="t_left">
+				<table>
+					<tr>
+						<th>姓名</th>
+					</tr>
+				</table>
+				<div class="cl_freeze" id="cl_freeze">
+					<table class="leftname">
+						<tr>
+							<td>----</td>
+						</tr>
+						
+					</table>
+				</div>
+			</div>
+
+			<div class="t_r" id="t_r">
+				<div class="t_r_t" id="t_r_t">
+					<div class="t_r_title" id="t_r_title">
+						<table id="test">
+							
+						</table>
+					</div>
+				</div>
+				<div class="t_r_content" id="t_r_content" onscroll="aa()">
+					<table class="rightcontent">
+						<tr class="rightnameTP">
+							<th>----</th>
+							
+						</tr>
+						<tr class="rightcontentTP">
+						<td>对错</td>
+						
+						</tr>
+					</table>
+				</div>
+			</div>
+		</div>
+		</div>
+</div>
+<script>
+	$(function(){
+			   
+		var id = storage.getItem($LOCALKAY_TEACHER_TASK_CURRENTID);
+		var tablename = storage.getItem($LOCALKAY_TEACHER_TASK_CURRENTTITLE);
+		document.getElementById("xzq").innerHTML=tablename;
+				$.ajax("/bysj2/proj/examinations/getpaperstatistics.action",{
+					type:"get",
+					async:false,
+					dataType:"json",
+					data:{"id":id},
+					success:function(resp){
+				var data = resp.data;
+				var stuaccount=new Array();
+		        var  stutmp=new Array();
+		        var numlist=new Array();
+		        var tmp = new Array();
+			    var htmlleftname = "";
+				var htmlrighttitle="";	
+				var htmlrightcontent="";
+				var correctrate="";
+				var thiscorrectrate0="";
+	            var thiscorrectrate1=""; 
+	            var thiscorrectrate2=""; 
+	            var  result1=0;
+	            var  result2=0;
+	            var  num1=0;
+	            var  num2=0;
+	            var flag=0;
+		   if(resp && resp.success && data){
+		   
+	
+						//获取姓名   存入数组
+					 for(var i=0;i<data.length;i++){
+		          	    stuaccount[i]=data[i].name;
+		          	    	}
+		          	 for(var i in stuaccount){
+					      //该元素在tmp内部不存在才允许追加
+					if(stutmp.indexOf(stuaccount[i])==-1){
+					stutmp.push(stuaccount[i]);
+							}
+					} 	
+
+					//题号遍历
+					$.each(data,function(i,v){
+						
+					if(data[i].answer==null){
+						flag++;
+					//	alert(flag);
+					}
+					else{  
+					$.each(data,function(i,v){
+				  var obj2=JSON.parse(v.answer); 
+					if(obj2!=null){
+					 /*  var newobj=new Object();
+					  
+					  newobj.isright="--"; */
+						for(var i=0;i<obj2.length;i++){
+							numlist[i]=obj2[i].uuid;
+								}
+					}
+							}); 
+					//题号存储
+				for(var i in numlist){
+						if(tmp.indexOf(numlist[i])==-1){
+							tmp.push(numlist[i]);
+									}
+								}
+								
+							}
+						 }); 			
+								
+					//判断answer是否全空  全空则无数据
+			if(flag==data.length){
+				$(".tablestyle").empty();
+				document.getElementById("xzq1").innerHTML="没有数据,学生还没有答题！";	
+			}			
+				     //姓名展示
+ 					 for(var j=0;j<stutmp.length;j++){
+		               htmlleftname+=("<tr><td>"+stutmp[j]+"</td></tr>");
+		               }
+                     //题号展示  按照序号显示  tem里是uuid
+                     	 for(var j=0;j<tmp.length;j++){
+		               htmlrighttitle+=("<th>"+(j+1)+"题</th>");
+		               }
+				    	//数据展示
+		               	  for(var j=0;j<data.length;j++){
+		               	     for(var y=0;y<tmp.length;y++){
+		               	  var obj=JSON.parse(data[j].answer); 
+		               	  result1=data[j].rightnum;//每个学生对的个数
+		      			   result2=data[j].wrongnum; //每个学生错的个数
+		               	//    $.each(obj,function(i,v)
+		               	   	    if(obj!=null){
+		               	    for(var i=0;i<obj.length;i++){
+		            
+		               	    if(obj[i].uuid==tmp[y]){
+		               	           var isright=obj[i].isright;
+			                //每个学生每题的对错
+		                 thiscorrectrate2+=("<td>"+(isright==true?"对":"错")+"</td>");
+		               	    }
+		               	
+		               	    }
+		               	    }
+		               	    else{
+		               	     thiscorrectrate2+=("<td>"+"--"+"</td>");
+		               	    }
+			            
+		                     	
+		                  }  	
+		                     	  thiscorrectrate1="<tr>"+"<td>"+result1+"/"+"<span style='"+(result2<90000?"color:red":"")+"'>"+result2+"</span>"+"</td>"+thiscorrectrate2+"</tr>";
+		                   $(".rightcontent").append(thiscorrectrate1); 
+		                   thiscorrectrate2=""; //清空td
+		               	} 
+		               	//每题的对错统计展示
+		               	   for(var y=0;y<tmp.length;y++){
+		               	    for (var z=0;z<data.length;z++){
+		               	    var obj2=JSON.parse(data[z].answer); 
+		               	       if(obj2!=null){ 
+		               	    for(var a=0;a<obj2.length;a++){
+		               	    if(obj2[a].uuid==tmp[y]){
+		               	     var isright1=obj2[a].isright;   //每个学生每题的对错
+		               	      if(isright1){
+		               	      num1++;
+		               	    //  alert("num1"+num1);
+		               	      }
+		               	      else{
+		               	      num2++;
+		               	      }
+		               	      }
+		               	    }
+		               	    }
+		               	    else{
+		               	    
+		               	     num2++;
+		               	    }
+		               	    
+		               	    
+		               	    }
+		               	      thiscorrectrate0+=("<td>"+num1+"/"+"<span style='"+(num2<90000?"color:red":"")+"'>"+num2+"</span>"+"</td>");
+		               	      num1=0; //清空对错计数
+		               	      num2=0; //清空对错计数
+		               	   }
+						$(".rightcontentTP").append(thiscorrectrate0);
+						 $(".leftname").append(htmlleftname); 
+		        		 $(".rightnameTP").append(htmlrighttitle);
+		        		 
+		        		/*     } */
+						}
+						else{
+							if(resp.emsg){
+								mui.toast(resp.emsg);
+							}
+						}
+					},
+				    error:function(){
+				    	
+				    }
+				});
+			});
+			
+		
+			function aa() {
+				var a = document.getElementById("t_r_content").scrollTop;
+				var b = document.getElementById("t_r_content").scrollLeft;
+				document.getElementById("cl_freeze").scrollTop = a;
+				document.getElementById("t_r_t").scrollLeft = b;
+			}
+</script>
+</body>
+</html>

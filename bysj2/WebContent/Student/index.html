@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>学生端</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<!--标准mui.css-->
+		<link rel="stylesheet" href="../_1/lib/mui/css/mui.min.css">
+       	<link rel="stylesheet" href="css/StudentEndMenu.css" />
+		<link rel="stylesheet" type="text/css" href="font/iconfont.css">
+		<script type="text/javascript" src="../_1/js/Outside.js"></script>
+		<script type="text/javascript" src="../_1/js/StorageKeys.js"></script>
+	</head>
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<h1 class="mui-title">考试系统</h1>
+		</header>
+		<div class="mui-content">
+			<div id="tabbar" class="mui-control-content mui-active">
+				<ul class="mui-table-view mui-grid-view mui-grid-9">
+					<li class="mui-table-view-cell mui-media mui-col-xs-4 mui-col-sm-3 select1">
+						<div style="margin-top:20px;">
+							<i class="iconfont icon-zuoye" style="color:#7dc5eb;font-size:50px "></i>
+							<div class="mui-media-body" >随堂练习</div>
+						</div>
+					</li>
+					<li class="mui-table-view-cell mui-media mui-col-xs-4 mui-col-sm-3 select2">
+						<div style="margin-top:20px;">
+							<i class="iconfont icon-zuo" style="color:#e98f36;font-size:50px "></i>
+							<div class="mui-media-body" >课后作业</div>
+						</div>
+					</li>
+					<li class="mui-table-view-cell mui-media mui-col-xs-4 mui-col-sm-3 select3">
+						<div style="margin-top:20px;">
+							<i class="iconfont icon-yicuoti" style="color:#4ed07d;font-size:50px "></i>
+						<div class="mui-media-body" >错题集</div>
+						</div>
+					</li>
+				</ul>
+			</div>
+		</div>
+	</body>
+	<script src="../_1/lib/mui/js/mui.min.js"></script>
+	<script>
+		mui.init({
+			swipeBack: true //启用右滑关闭功能
+		});
+		var account=storage.getItem($LOCALKAY_STUDENT_USER);
+	  mui('.mui-table-view').on('tap','.select1',function(){
+	  if(account==""||account==null){
+	      mui.openWindow({
+	     	url:'stulogin2.html'
+	     });
+	     }
+	     else{
+	    mui.openWindow({
+	    	
+	    	url:'ClassPractice_main.html'
+	    });
+	    }
+	  }) ;
+	      mui('.mui-table-view').on('tap','.select2',function(){
+	      if(account==""||account==null){
+	      mui.openWindow({
+	     	url:'stulogin2.html'
+	     });
+	     }
+	     else{
+	    mui.openWindow({
+	    	url:'HomeWork_main.html'
+	    });
+	    }
+	  }) ;
+	      mui('.mui-table-view').on('tap','.select3',function(){
+	      if(account==""||account==null){
+	      mui.openWindow({
+	     	url:'stulogin2.html'
+	     });
+	     }
+	     else{
+	    mui.openWindow({
+	    	url:'MistakesCollection_main.html'
+	    });
+	    }
+	  }) ;
+	</script>
+
+</html>

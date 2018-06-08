@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!-- Generated 2018-5-11 21:40:32 by Hibernate Tools 3.5.0.Final -->
+<hibernate-mapping>
+    <class name="com.xzq.entity.Assignmentdetail" table="ASSIGNMENTDETAIL">
+        <id name="id" type="java.lang.Integer">
+            <column name="ID" />
+            <generator class="assigned" />
+        </id>
+        <property name="assingid" type="java.lang.Integer">
+            <column name="ASSINGID" />
+        </property>
+        <property name="account" type="java.lang.String">
+            <column name="ACCOUNT" />
+        </property>
+        <property name="name" type="java.lang.String">
+            <column name="NAME" />
+        </property>
+        <property name="classid" type="java.lang.Integer">
+            <column name="CLASSID" />
+        </property>
+        <property name="answer" type="java.lang.String">
+            <column name="ANSWER" />
+        </property>
+        <property name="total" type="java.lang.Integer">
+            <column name="TOTAL" />
+        </property>
+        <property name="wrongnum" type="java.lang.Integer">
+            <column name="WRONGNUM" />
+        </property>
+        <property name="rightnum" type="java.lang.Integer">
+            <column name="RIGHTNUM" />
+        </property>
+    </class>
+</hibernate-mapping>

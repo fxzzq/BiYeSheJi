@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!-- Generated 2018-5-11 21:40:32 by Hibernate Tools 3.5.0.Final -->
+<hibernate-mapping>
+    <class name="com.xzq.entity.Classtea" table="CLASSTEA">
+        <id name="id" type="java.lang.Integer">
+            <column name="ID" />
+            <generator class="assigned" />
+        </id>
+        <property name="teaid" type="java.lang.String">
+            <column name="TEAID" />
+        </property>
+        <property name="classid" type="java.lang.Integer">
+            <column name="CLASSID" />
+        </property>
+    </class>
+</hibernate-mapping>

@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd
+		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.3.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.3.xsd">
+
+
+
+	<context:component-scan
+		base-package="com.xzq.service,com.xzq.service.impl,com.xzq.dao,com.xzq.dao.impl">
+		<!-- 扫描时跳过 @Controller 注解的JAVA类（控制器） -->
+		<context:exclude-filter type="annotation"
+			expression="org.springframework.stereotype.Controller" />
+	</context:component-scan>
+	<context:property-placeholder location="classpath:conf/config.properties" />
+	<!-- dataSource配置 -->
+	<bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource">
+		<property name="driverClass" value="${driverClassName}"></property>
+		<property name="jdbcUrl" value="${jdbc_url}"></property>
+		<property name="user" value="${jdbc_username}"></property>
+		<property name="password" value="${jdbc_password}"></property>
+	</bean>
+	<!-- sessionFactory配置 -->
+	<bean id="sessionFactory"
+		class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
+		<property name="dataSource" ref="dataSource"></property>
+		<property name="mappingResources">
+			<array>
+				<value>com/xzq/entity/Assignment.hbm.xml</value>
+				<value>com/xzq/entity/Assignmentdetail.hbm.xml</value>
+				<value>com/xzq/entity/Classlist.hbm.xml</value>
+				<value>com/xzq/entity/Classtea.hbm.xml</value>
+				<value>com/xzq/entity/Examquestions.hbm.xml</value>
+				<value>com/xzq/entity/Mistakes.hbm.xml</value>
+				<value>com/xzq/entity/Paper.hbm.xml</value>
+				<value>com/xzq/entity/Stuclass.hbm.xml</value>
+				<value>com/xzq/entity/Student.hbm.xml</value>
+				<value>com/xzq/entity/Teacher.hbm.xml</value>
+				<value>com/xzq/entity/Termlist.hbm.xml</value>
+				<value>com/xzq/entity/Stumistakes.hbm.xml</value>
+			</array>
+		</property>
+		<property name="hibernateProperties">
+			<props>
+				<prop key="hibernate.show_sql">true</prop>
+				<prop key="hibernate.format_sql">true</prop>
+			    <prop key="hibernate.hbm2ddl.auto">update</prop>
+			</props>
+		</property>
+
+	</bean>
+	<!--Configuration初始值配置  -->
+	<bean id="configuration" class="com.xzq.utils.Configuration">
+		<!-- 获取我的班级列表接口URL -->
+	    <!-- 根据班级id获取学生列表URL  -->
+	    <!-- 获取学期URL  -->
+	    <!--获取教师列表URL  -->
+	    
+	    <!-- zip模板路径  -->
+	    <property name="zipTemplate" value="com/xzq/template/zipTemplate.zip"></property>
+	    
+	    <!-- Excel模板路径  -->
+	    <property name="excelTemplate" value="com/xzq/template/excelTemplate.xlsx"></property>
+	</bean>
+
+	<!-- 事物管理器配置 -->
+	<bean id="transactionManager"
+		class="org.springframework.orm.hibernate4.HibernateTransactionManager">
+		<property name="sessionFactory" ref="sessionFactory" />
+	</bean>
+
+	<tx:advice id="txAdvice" transaction-manager="transactionManager">
+		<tx:attributes>
+			<tx:method name="save*" propagation="SUPPORTS"    rollback-for="java.lang.RuntimeException" />
+			<tx:method name="delete*" propagation="SUPPORTS"  rollback-for="java.lang.RuntimeException"/>
+			<tx:method name="update*" propagation="SUPPORTS"  rollback-for="java.lang.RuntimeException"/>
+			<tx:method name="edit*" propagation="SUPPORTS" />
+			<tx:method name="change*" propagation="SUPPORTS" />
+			<tx:method name="hello*" propagation="SUPPORTS" rollback-for="java.lang.RuntimeException" />
+
+
+			<tx:method name="find*" propagation="REQUIRED" read-only="true" />
+			<tx:method name="get*" propagation="REQUIRED" />
+			<tx:method name="select*" propagation="REQUIRED" />
+			<tx:method name="*" propagation="REQUIRED" />
+		</tx:attributes>
+	</tx:advice>
+
+	<aop:config>
+		<!-- For example : 'execution(* com.xyz.myapp.service.*.*(..))' execution(* 
+			com.mxp.service..*(..)) -->
+		<aop:pointcut id="interceptorPointCuts" expression="execution(* com.xzq.service..*(..))" />
+		<aop:advisor advice-ref="txAdvice" pointcut-ref="interceptorPointCuts" />
+	</aop:config>
+</beans>

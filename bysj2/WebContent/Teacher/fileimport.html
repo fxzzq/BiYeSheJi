@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<meta charset="utf-8">
+<title>试题导入</title>
+	<link rel="stylesheet" href="/bysj2/_1/lib/zui/css/zui.min.css"/>
+	<link rel="stylesheet" href="/bysj2/_1/lib/zui/lib/datatable/zui.datatable.min.css">
+	<link rel="stylesheet" href="/bysj2/_1/lib/zui/lib/chosen/chosen.min.css"/>
+	<link rel="stylesheet" href="/bysj2/_1/lib/zui/lib/datetimepicker/datetimepicker.min.css"/>
+	<link rel="stylesheet" href="/bysj2/_1/lib/zui/lib/treemap/zui.treemap.min.css"/>
+	<link rel="stylesheet" href="/bysj2/_1/css/custom.css"/>
+	<link rel="stylesheet" href="/bysj2/_1/css/iconfont.css"/>
+	<link rel="stylesheet" href="/bysj2/_1/css/loading.css"/>
+	<link rel="stylesheet" href="/bysj2/_1/lib/zui/lib/uploader/zui.uploader.min.css">
+	<link rel="stylesheet" href="/bysj2/_1/css/list.css"/>
+	<link rel="stylesheet" href="/bysj2/_1/css/fileimport.css"/>
+	
+	<script type="text/javascript" src="/bysj2/_1/lib/zui/lib/jquery/jquery.js"></script>
+	<script type="text/javascript" src="/bysj2/_1/lib/zui/js/zui.min.js"></script>
+	<script type="text/javascript" src="/bysj2/_1/lib/zui/lib/datatable/zui.datatable.min.js"></script>
+	<script type="text/javascript" src="/bysj2/_1/lib/zui/lib/chosen/chosen.min.js"></script>
+	<script type="text/javascript" src="/bysj2/_1/lib/zui/lib/datetimepicker/datetimepicker.min.js"></script>
+	<script type="text/javascript" src="/bysj2/_1/lib/zui/lib/treemap/zui.treemap.min.js"></script>
+	<script type="text/javascript" src="/bysj2/_1/lib/zui/lib/uploader/zui.uploader.min.js"></script>
+	<script type="text/javascript" src="/bysj2/_1/js/Overall.js"></script>
+	<script type="text/javascript" src="/bysj2/_1/js/Outside.js"></script>
+</head>
+<body>
+	<div class="container">
+		<div id='myUploader' class="uploader" data-url="proj/examinations/import.action?magicboy=yes">
+			<div class="uploader-message text-center">
+				<div class="content"></div>
+				<button type="button" class="close">×</button>
+			</div>
+			<div class="uploader-files file-list file-list-lg" data-drag-placeholder="拖动文件到此处"></div>
+			<div class="uploader-actions">
+				<div class="uploader-status pull-right text-muted"></div>
+				<button type="button" class="btn btn-link uploader-btn-browse"><i class="icon icon-plus"></i>选择文件</button>
+				<button type="button" class="btn btn-link uploader-btn-start"><i class="icon icon-upload"></i>开始导入</button>
+				<button type="button" class="btn btn-link" onclick="download_mb();"><i class="icon icon-download"></i>压缩文件模板下载</button>
+				<button type="button" class="btn btn-link" onclick="download_ex();"><i class="icon icon-download"></i>Excel模板下载</button>
+			</div>
+		</div>
+	</div>
+</body>
+<script type="text/javascript">
+
+//获取url ?后的参数值
+function getParam(paramName) { 
+    paramValue = "", isFound = !1; 
+    if (this.location.search.indexOf("?") == 0 && this.location.search.indexOf("=") > 1) { 
+        arrSource = unescape(this.location.search).substring(1, this.location.search.length).split("&"), i = 0; 
+        while (i < arrSource.length && !isFound) arrSource[i].indexOf("=") > 0 && arrSource[i].split("=")[0].toLowerCase() == paramName.toLowerCase() && (paramValue = arrSource[i].split("=")[1], isFound = !0), i++ 
+    } 
+    return paramValue == "" && (paramValue = null), paramValue 
+} 
+
+function download_mb(){		
+	        //_blank加载到一个新窗口
+			window.open('/bysj2/proj/examinations/downloadzip.action','_blank');
+		}
+function download_ex(){			
+	window.open('/bysj2/proj/examinations/downloadexcel.action','_blank');
+}
+$(document).ready(function(){
+	var account=getParam("account");
+	//alert(account);
+	var options = {
+				url: '/bysj2/proj/examinations/import.action?account='+account+'',
+				filters:{
+					mime_types : [{title: '压缩文件', extensions: 'zip'},{title: 'Excel文件', extensions: 'xls,xlsx'}],
+					max_file_size:'10mb',
+					removeUploaded:true,
+					chunk_size:0
+				},
+				chunk_size:0,
+				limitFilesCount : 5,
+				max_retries : 1,
+				rename : true,
+				onFileUploaded:function(file,msg){
+					var resp = JSON.parse(msg.response);
+					if(resp && resp.success){
+						alertSuccess('导入成功!');
+					}
+					else{
+						if(resp.emsg){
+							upload.showMessage(resp.emsg,'danger',0);
+						}
+					}
+				},
+				onError : function(error){	
+					var upload = $('#myUploader').data('zui.uploader');
+					upload.showMessage(error.data.emsg,'danger',10000);
+					alertError(error.data.emsg);
+				}
+			};
+			$('#myUploader').uploader(options);
+});
+</script>
+</html>

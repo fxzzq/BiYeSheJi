@@ -1,0 +1,379 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title>错题练习答题</title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../_1/lib/mui/css/mui.min.css" rel="stylesheet" />
+		<link href="css/Answer.css" rel="stylesheet" />
+		<link href="css/AnswerResult.css" rel="stylesheet"/>
+		<script src="../_1/lib/mui/js/mui.min.js"></script>
+		<script type="text/javascript" src="../_1/lib/jquery-1.7.2.min.js"></script>
+		<script type="text/javascript" src="../_1/js/Outside.js"></script>
+		<script type="text/javascript" src="../_1/js/Overall.js"></script>
+		<script type="text/javascript" src="../_1/js/StorageKeys.js"></script>
+		<style type="text/css">
+			.mui-input-row img {
+				max-width: 80%;
+				max-height: 150px;
+				vertical-align: middle;
+			}
+			
+			.mui-table-view-cell img {
+				vertical-align: middle;
+			}
+		</style>
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<button type="button" id="fanhui" class="mui-left mui-btn  mui-btn-link mui-btn-nav mui-pull-left">
+					<span class="mui-icon mui-icon-left-nav"></span>返回
+				</button>
+			<h1 class="mui-title">答题</h1>
+		</header>
+		<div class="mui-content">
+			<div class="paperset">
+				<p id="title"></p>
+			</div>
+			<div class="countResult" id="countResult" style="display:none ">
+				<p>对/错:&nbsp;<span class="success" id="right"></span><span>/</span><span class="error" id="wrong"></span></p>
+			</div>
+			<ul class="mui-table-view">
+
+			</ul>
+			<footer class="butn mui-content-padded" id="butn">
+				<button type="button" id="btn" class="meloclan-mui-btn mui-btn">提交</button>
+			</footer>
+		</div>
+		<script type="text/javascript">
+			document.getElementById("fanhui").addEventListener("tap", function() {
+				mui.openWindow({
+					url: 'MistakesCollection_main.html'
+				});
+			});
+			mui.init();
+			var type = "";
+			var condition = "";
+			var taccount = "";
+			var num = 0; //统计单选
+			var num1 = 0; //答题结果时统计单选
+			var checkboxnum = 0; //统计多选
+			var checkboxnum1 = 0; //答题结果时统计单选
+			var array = new Array();
+			var array2 = new Array(); //学生答题的单选答案
+			var checkboxarray = new Array();
+			var checkboxarray2 = new Array(); //学生答题的多选答案
+			var radioanswer = new Array(); //正确答案
+			var checkboxanswer = new Array(); //正确答案
+			var flag = false;
+			var totalright = 0;
+			var totalerror = 0;
+			var respdata;
+			var lastanswer = new Array(); //存单选
+			var lastanswer2 = new Array(); //存多选 
+			var lastanswer3 = new Array(); //单选 多选 存在一起
+
+			var radioresult = 0;
+			var checkboxresult = 0;
+			taccount = storage.getItem($LOCALKAY_STUDENT_MISTAKESQUERY_TACCOUNT) == null ? "" : storage.getItem($LOCALKAY_STUDENT_MISTAKESQUERY_TACCOUNT);
+			if(storage.getItem($LOCALKAY_STUDENT_MISTAKESQUERY_TYPE) == null) {
+				type = "";
+			} else {
+				type = storage.getItem($LOCALKAY_STUDENT_MISTAKESQUERY_TYPE);
+			}
+			if(storage.getItem($LOCALKAY_STUDENT_MISTAKESQUERY_iscorrect) == null) {
+				condition = "";
+			} else {
+				condition = storage.getItem($LOCALKAY_STUDENT_MISTAKESQUERY_iscorrect);
+			}
+			if(condition == 1) {
+				condition = "";
+			}
+
+			$.ajax("/bysj2/proj/student/getmistakes.action", {
+				type: "post",
+				async: false,
+				dataType: "json",
+				data: {
+					"type": type,
+					"condition": condition,
+					"taccount": taccount
+				},
+				success: function(resp) {
+					var data = resp.data;
+					respdata = data; //全局使用
+					if(resp && resp.success && data) {
+						$(".mui-table-view").empty();
+						var html = "";
+						$.each(data, function(i, v) {
+
+							html += ("<li class='mui-table-view-cell listfont'>" + "<span>" + (i + 1) + "." + "</span>");
+							//多选情况
+							if(v.multi == 1) {
+								var content = JSON.parse(v.content);
+								var height = 0;
+								var style = "";
+								checkboxnum++;
+								html += ("<span>" + v.stem + "</span><br />");
+								var length = content.length;
+								for(var i = 0; i < length; i++) {
+									if(content[i].type == "charactor") {
+										html += ("<div class='mui-input-row mui-checkbox mui-left listfont2'><label>" + JSON.parse(v.content)[i].name + ".  " + JSON.parse(v.content)[i].value + "</label><input name='checkbox" + checkboxnum + "' type='checkbox' value='" + JSON.parse(v.content)[i].name + "'></div>");
+									}
+									if(content[i].type == "image") {
+										var imgHtml = content[i].value;
+										height = getHeight(imgHtml) / 2;
+										style = "top:" + height + "px";
+										html += ("<div class='mui-input-row mui-checkbox mui-left listfont2'><label>" + JSON.parse(v.content)[i].name + ".  " + JSON.parse(v.content)[i].value + "</label><input name='checkbox" + checkboxnum + "' type='checkbox' value='" + JSON.parse(v.content)[i].name + "' style='" + style + "'></div>");
+									}
+								}
+								html += ("</li>");
+							} else {
+								//单选情况
+								var v1 = v.value;
+								var height = 0;
+								var style = "";
+								num++;
+								html += ("<span>" + v.stem + "</span><br />");
+								var length = JSON.parse(v.content).length;
+								for(var i = 0; i < length; i++) {
+									if(JSON.parse(v.content)[i].type == "charactor") {
+										html += ("<div class='mui-input-row mui-radio mui-left listfont2'><label>" + JSON.parse(v.content)[i].name + ".  " + JSON.parse(v.content)[i].value + "</label><input name='radio" + num + "' type='radio' value='" + JSON.parse(v.content)[i].name + "'></div>");
+									}
+									if(JSON.parse(v.content)[i].type == "image") {
+										height = getHeight(JSON.parse(v.content)[i].value) / 2;
+										style = "top:" + height + "px";
+										html += ("<div class='mui-input-row mui-radio mui-left listfont2'><label >" + JSON.parse(v.content)[i].name + ". " + JSON.parse(v.content)[i].value + " </label><input name='radio" + num + "' type='radio' value='" + JSON.parse(v.content)[i].name + "' style='" + style + "'></div>");
+									}
+								}
+								html += ("</li>");
+							}
+						});
+						$(".mui-table-view").append(html);
+						$.each(data, function(i, v) {
+							if(v.multi == 1) {
+								//多选题答案
+								var obj = new Object();
+								obj.uuid = v.uuid;
+								obj.answer = v.answer;
+								checkboxanswer.push(obj);
+							} else {
+								//单选题答案
+								var obj = new Object();
+								obj.uuid = v.uuid;
+								obj.answer = v.answer;
+								radioanswer.push(obj);
+							}
+						});
+					} else {
+						if(resp.emsg) {
+							mui.toast(resp.emsg);
+						}
+					}
+				},
+				error: function() {}
+			});
+			mui('#butn').on('tap', '#btn', function() {
+				//保存学生的每题的答题情况
+				//所有单选题 存入一个数组
+				for(var i = 0; i < num; i++) {
+					array[i] = "radio" + (i + 1);
+				}
+				var z = 0;
+				for(var i = 0; i < array.length; i++) {
+					array2[z] = $("input:radio[name='" + array[i] + "']:checked").val();
+					z++;
+				}
+				//所有多选题题存入一个数组
+				for(var i = 0; i < checkboxnum; i++) {
+					checkboxarray[i] = "checkbox" + (i + 1);
+				}
+				var w = 0;
+				for(var i = 0; i < checkboxarray.length; i++) {
+					var obj = document.getElementsByName(checkboxarray[i]);
+					var heck_val = new Array();
+					for(k in obj) {
+						if(obj[k].checked) {
+							heck_val.push(obj[k].value);
+						}
+					}
+					checkboxarray2[w] = "";
+					for(var j = 0; j < heck_val.length; j++) {
+						checkboxarray2[w] += heck_val[j];
+					}
+					w++;
+				}
+				//确定学生答题的对错 存入数组 点提交传入后台存入上次的对错
+				//遍历单选
+				for(var i = 0; i < radioanswer.length; i++) {
+					/*   if(array2[i]!=""){
+		              mui.toast("还有单选题目未完成，请检查！");
+                         break;
+		              }
+		              else{
+		              flag=true; */
+
+					if(radioanswer[i].answer == array2[i]) {
+						var lastobj = new Object();
+						lastobj.uuid = radioanswer[i].uuid;
+						lastobj.iswrong = 1;
+						lastanswer.push(lastobj);
+						totalright++;
+					} else {
+						var lastobj = new Object();
+						lastobj.uuid = radioanswer[i].uuid;
+						lastobj.iswrong = 0;
+						lastanswer.push(lastobj);
+						totalerror++;
+					}
+					/*   } */
+				}
+
+				/*  for(var i=0;i<lastanswer.length;i++){
+				alert("data:uuid="+lastanswer[i].uuid+" iswrong="+lastanswer[i].iswrong);
+				}  */
+				//遍历多选
+				for(var i = 0; i < checkboxanswer.length; i++) {
+					if(checkboxanswer[i].answer == checkboxarray2[i]) {
+						var lastobj = new Object();
+						lastobj.uuid = checkboxanswer[i].uuid;
+						lastobj.iswrong = 1;
+						lastanswer2.push(lastobj);
+						totalright++;
+					} else {
+						var lastobj = new Object();
+						lastobj.uuid = checkboxanswer[i].uuid;
+						lastobj.iswrong = 0;
+						lastanswer2.push(lastobj);
+						totalerror++;
+					}
+				}
+
+				//把单选存入到lastanswer3中
+				for(var i = 0; i < lastanswer.length; i++) {
+					var lastobj = new Object();
+					lastobj.uuid = lastanswer[i].uuid;
+					lastobj.iswrong = lastanswer[i].iswrong;
+					lastanswer3.push(lastobj);
+				}
+				//把多选存入到lastanswer3中
+				for(var i = 0; i < lastanswer2.length; i++) {
+					var lastobj = new Object();
+					lastobj.uuid = lastanswer2[i].uuid;
+					lastobj.iswrong = lastanswer2[i].iswrong;
+					lastanswer3.push(lastobj);
+				}
+
+				for(var i = 0; i < lastanswer3.length; i++) {
+					//   alert("data:uuid="+lastanswer3[i].uuid+" iswrong="+lastanswer3[i].iswrong);
+				}
+				//同步作答结果
+
+				$.ajax("/bysj2/proj/student/asyncmistakes.action", {
+					type: "post",
+					async: false,
+					dataType: "json",
+					data: {
+						"data": JSON.stringify(lastanswer3),
+						"taccount": taccount,
+						"type": type
+					},
+					success: function(resp) {
+						if(resp && resp.success) {
+							$(".mui-table-view").empty();
+							var html = "";
+							//respdata是上一个请求返回的数据
+							$.each(respdata, function(i, v) {
+								html += ("<li class='mui-table-view-cell'><div class='mui-table'><div class='mui-table-cell mui-col-xs-10 listfont'>" + "<span>" + (i + 1) + "." + "</span>");
+								//多选情况
+								if(v.multi == 1) {
+									checkboxnum1++;
+									html += ("<span>" + v.stem + "</span><br />");
+									var length = JSON.parse(v.content).length;
+									var contentobj = JSON.parse(v.content);
+									for(var i = 0; i < length; i++) {
+										var checked = "";
+										var disabled = "disabled";
+										//分离1个多选题的答案
+										var checkboxarray2sub = new Array();
+										for(var f = 0; f < checkboxarray2[checkboxresult].length; f++) {
+											checkboxarray2sub[f] = checkboxarray2[checkboxresult][f];
+										}
+										for(var j = 0; j < checkboxarray2sub.length; j++) {
+											//  alert(checkboxarray2sub[j]);
+											if(checkboxarray2sub[j] == JSON.parse(v.content)[i].name) {
+												checked = "checked";
+												//disabled="";
+											}
+										}
+										if(contentobj[i].type == "charactor") {
+											html += ("<div class='mui-input-row mui-checkbox mui-left listfont2'><label>" + JSON.parse(v.content)[i].name + ".  " + JSON.parse(v.content)[i].value + "</label><input " + checked + " " + disabled + " name='checkbox" + checkboxnum1 + "' type='checkbox' value='" + JSON.parse(v.content)[i].name + "'></div>");
+										}
+										if(contentobj[i].type == "image") {
+											height = getHeight(contentobj[i].value) / 2;
+											style = "top:" + height + "px";
+											html += ("<div class='mui-input-row mui-checkbox mui-left listfont2'><label>" + JSON.parse(v.content)[i].name + ".  " + JSON.parse(v.content)[i].value + "</label><input style='" + style + "' " + checked + " " + disabled + " name='checkbox" + checkboxnum1 + "' type='checkbox' value='" + JSON.parse(v.content)[i].name + "'></div>");
+										}
+									}
+									html += ("</div> <div class='mui-table-cell mui-col-xs-2 mui-text-right'><span class='mui-h4' style='" + (lastanswer2[checkboxresult].iswrong == 1 ? "color:#00C89D" : "color:red") + "'>" + (lastanswer2[checkboxresult].iswrong == 1 ? "对" : "错") + "</span></div></div></li>");
+									checkboxresult++;
+
+								} else {
+									//单选情况
+									num1++;
+									html += ("<span>" + v.stem + "</span><br />");
+									var length = JSON.parse(v.content).length;
+									var contentobj = JSON.parse(v.content);
+									for(var i = 0; i < length; i++) {
+										var checked = "";
+										var disabled = "disabled";
+										if(array2[radioresult] == JSON.parse(v.content)[i].name) {
+											checked = "checked";
+											//	disabled="";
+										}
+										if(JSON.parse(v.content)[i].type == "charactor") {
+											html += ("<div class='mui-input-row mui-radio mui-left listfont2'><label>" + JSON.parse(v.content)[i].name + ".  " + JSON.parse(v.content)[i].value + "</label><input " + checked + " " + disabled + " name='radio" + num1 + "' type='radio' value='" + JSON.parse(v.content)[i].name + "'></div>");
+										}
+										if(JSON.parse(v.content)[i].type == "image") {
+											height = getHeight(contentobj[i].value) / 2;
+											style = "top:" + height + "px";
+											html += ("<div class='mui-input-row mui-radio mui-left listfont2'><label >" + JSON.parse(v.content)[i].name + ".  " + JSON.parse(v.content)[i].value + "</label><input style='" + style + "' " + checked + "  " + disabled + " name='radio" + num1 + "' type='radio' value='" + JSON.parse(v.content)[i].name + "'></div>");
+										}
+									}
+									html += ("</div> <div class='mui-table-cell mui-col-xs-2 mui-text-right'><span class='mui-h4' style='" + (lastanswer[radioresult].iswrong == 1 ? "color:#00C89D" : "color:red") + "'>" + (lastanswer[radioresult].iswrong == 1 ? "对" : "错") + "</span></div></div></li>");
+									radioresult++;
+								}
+							});
+							$(".mui-table-view").append(html);
+							//隐藏提交按钮
+							var currentBtn = document.getElementById("butn");
+							currentBtn.style.display = "none";
+							//显示本次错题练习总的对/错
+							var currentBtn1 = document.getElementById("countResult");
+							currentBtn1.style.display = "block";
+							var totalr = document.getElementById("right");
+							var totale = document.getElementById("wrong");
+							totalr.innerHTML = totalright;
+							totale.innerHTML = totalerror;
+						} else {
+							if(resp.emsg) {
+								mui.toast(resp.emsg);
+							}
+						}
+					},
+					error: function() {}
+				});
+
+			});
+
+			function getHeight(data) {
+				var div = document.createElement("div");
+				$(div).html(data);
+				return div.children[0].height;
+			}
+		</script>
+	</body>
+
+</html>

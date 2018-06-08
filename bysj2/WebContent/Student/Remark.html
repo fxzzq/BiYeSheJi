@@ -1,0 +1,162 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../_1/lib/mui/css/mui.min.css" rel="stylesheet" />
+		<link href="../_1/lib/mui/css/mui.picker.css" rel="stylesheet" />
+		<link href="../_1/lib/mui/css/mui.poppicker.css" rel="stylesheet" />
+		<link rel="stylesheet" href="css/Remark.css" />
+	</head>
+	<body>
+		<header class="mui-bar mui-bar-nav">
+		<button type="button" class="mui-left mui-action-back mui-btn  mui-btn-link mui-btn-nav mui-pull-left">
+					<span class="mui-icon mui-icon-left-nav"></span>返回
+				</button>
+			<h1 class="mui-title">评课</h1>
+		</header>
+		<div class="mui-content" >
+				<ul id="uu" class="mui-table-view">
+				<li class="mui-table-view-cell"  id="select1" >
+					<span class="mui-navigate-right  " id='showUserPicker' class="mui-btn mui-btn-block" ><span style="color: red;">* </span>上课是否迟到<span id='userResult' class="mui-ellipsis ui-alert formset" ></span></span> 						
+				</li>
+				<li class="mui-table-view-cell"  id="select2" >
+					<span class="mui-navigate-right " id='showUserPicker1' class="mui-btn mui-btn-block" ><span style="color: red;">* </span>上课是否生动<span id='userResult1' class="mui-ellipsis ui-alert formset"></span></span> 						
+				</li>
+				<li class="mui-table-view-cell"  id="select3" >
+					<span class="mui-navigate-right " id='showUserPicker2' class="mui-btn mui-btn-block" ><span style="color: red;">* </span>上课是否抽问<span id='userResult2' class="mui-ellipsis ui-alert formset" ></span></span> 						
+				</li>
+				<li class="mui-table-view-cell"  id="info" >
+				<textarea id="textarea" rows="4" placeholder="备注"></textarea>
+				</li>
+			</ul>
+			<footer class="butn mui-content-padded" >
+				<button type="button" id="btn" class="meloclan-mui-btn mui-btn mui-btn-success " >提交</button>
+			</footer>
+		</div>
+		<script type="text/javascript" src="../_1/lib/jquery-1.7.2.min.js"></script>
+		<script src="../_1/lib/mui/js/mui.min.js"></script>
+		<script src="../_1/lib/mui/js/mui.picker.js"></script>
+		<script src="../_1/lib/mui/js/mui.poppicker.js"></script>
+		<script type="text/javascript" src="../_1/js/Outside.js"></script>
+		<script type="text/javascript" src="../_1/js/Overall.js"></script>
+		<script type="text/javascript" src="../_1/js/StorageKeys.js"></script>
+		<script>
+		var pickerData = [{value:1,text:'A'},{value:2,text:'B'},{value:3,text:'C'},{value:4,text:'D'}, {value:5,text:'E'}];
+		var indicators;
+		$(function(){
+			//获取评价指标
+			getIndicators();
+			creatInddom();
+			var picker = new mui.PopPicker();
+			picker.setData(pickerData);
+			mui("#uu").on("tap",".picker",function(e){
+				var dom = $(this);
+				picker.show(function(items){
+					dom.attr("ivalue",items[0].text+"");
+					dom.find(".formset").html(items[0].text);
+				});
+			});
+			document.getElementById("btn").addEventListener("tap",function(e){
+				var date = new Date().format("yyyy-MM-dd");
+				var courseIndex = storage.getItem($LOCALKAY_STUDENT_REMARK_COURSEINDEX);
+				var taccount = storage.getItem($LOCALKAY_STUDENT_REMARK_TACCOUNT);
+				if(courseIndex && taccount){
+					var pickerList = new Array();
+					var pickers = $(".picker");
+					var evaluation = $("#evaluation").val();
+					var flag = true;
+					var emsg = "";
+					pickers.each(function(i){
+						var name = $(pickers[i]).attr("iname");
+						var id = $(pickers[i]).attr("iid");
+						var value = $(pickers[i]).attr("ivalue");
+						if(value == undefined || value == null){
+							flag = false;
+							emsg = "请先完善评价!";
+							return;
+						}
+						var obj = {"id":id,"name":name,"value":value};
+						pickerList[i] = obj;
+					});
+					if(!flag){
+						mui.toast(emsg);
+						return;
+					}
+					$.ajax("evaluation/evaluate.action",{
+						type:"post",
+						async:false,
+						data:{
+							"taccount":taccount,
+							"saccount":saccount,
+							"date":date,
+							"courseindex":courseIndex,
+							"content":JSON.stringify({"indicator":pickerList,"evaluation":evaluation})
+							},
+						dataType:"json",
+						success:function(resp){
+							if(resp && resp.success){
+								if(mui.os.plus){
+									var parentview = plus.webview.getWebviewById("ClassRemark.html");
+									parentview.reload(true);
+									plus.webview.currentWebview().close();
+								}
+								else{
+									mui.openWindow({
+										url: 'ClassRemark.html'
+									});
+								}
+							}
+							else{
+								if(resp.emsg){
+									mui.toast(resp.emsg);
+								}
+							}
+						},
+					    error:function(){
+					    	
+					    }
+					});
+				}
+				else{
+					mui.toast("部分参数为空，请返回上一页重新进入!");
+				}
+			});
+		});
+	function getIndicators(){
+		$.ajax("evaluation/getindicators.action",{
+			type:"get",
+			async:false,
+			dataType:"json",
+			success:function(resp){
+				var data = resp.data;
+				if(resp && resp.success && data){
+					indicators = data;
+				}
+				else{
+					if(resp.emsg){
+						mui.toast(resp.emsg);
+					}
+				}
+			},
+		    error:function(){
+		    	
+		    }
+		});
+	}
+	function creatInddom(){
+		if(indicators){
+			$("#uu").empty();
+			var html = "";
+			$.each(indicators,function(i,v){
+				html+="<li class='mui-table-view-cell picker' iname='"+v.name+"' iid='"+v.id+"'>";
+				html+=("<span class='mui-navigate-right' class='mui-btn mui-btn-block' ><span style='color: red;'>* </span>"+v.name+ "<span class='mui-ellipsis ui-alert formset' ></span></span></li>");
+			});
+			html+="<li class='mui-table-view-cell'  id='info' ><textarea id='evaluation' rows='4' placeholder='备注'></textarea></li>";
+			$("#uu").append(html);
+		}
+	}
+		</script>
+	</body>
+</html>

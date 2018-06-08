@@ -1,0 +1,52 @@
+.success>div>div.mui-text-right>span{
+	
+    color: green;
+}
+.error>div>div.mui-text-right>span{
+	color: red;
+}
+h5{
+	color: #000000;
+}
+.mui-bar .mui-btn-link {
+	font-size: 16px;
+	line-height: 44px;
+	top: 0;
+	padding: 0;
+	color: #00C89D;
+	border: 0
+}
+
+.listfont h5{
+	color: #1F1F1F;
+	font-size: 15px;
+	font-weight: normal;
+}
+.listfont h5>span{
+	margin:0 5px;
+}
+/*#listfont2{
+		color: #717171;
+	font-size: 14px;
+}*/
+.mui-table-view-cell:after {
+	position: absolute;
+	right: 0;
+	bottom: 0;
+	left: 0px;
+	height: 1px;
+	content: '';
+	-webkit-transform: scaleY(.5);
+	transform: scaleY(.5);
+	background-color: #c8c7cc
+}
+a {
+	text-decoration: none;
+	color: #2E9134
+}
+a:active {
+	color: #2E9134
+}
+.mui-title{
+	font-weight: bold;
+}

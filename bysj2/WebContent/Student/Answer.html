@@ -1,0 +1,181 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title>答题</title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="${basePath}_1/lib/mui/css/mui.min.css" rel="stylesheet" />
+	<link rel="stylesheet" href="${basePath}Student/css/Answer.css" />
+	<style type="text/css">
+	    .mui-input-row img{
+	        max-width:80%;
+	        max-height:150px;
+	        vertical-align: middle;
+	    }
+	    .mui-table-view-cell img{
+	        vertical-align: middle;
+	    }
+	</style>
+	</head>
+	<body>
+	<script type="text/javascript" src="${basePath}_1/lib/jquery-1.7.2.min.js"></script>
+	<script type="text/javascript" src="${basePath}_1/js/Outside.js"></script>
+	<script src="${basePath}_1/lib/mui/js/mui.min.js"></script>
+	<script type="text/javascript" src="${basePath}_1/js/StorageKeys.js"></script>
+		<header class="mui-bar mui-bar-nav">
+			<button type="button" class="mui-left mui-action-back mui-btn  mui-btn-link mui-btn-nav mui-pull-left">
+					<span class="mui-icon mui-icon-left-nav"></span>返回
+				</button>
+			<h1 class="mui-title">答题</h1>
+		</header>
+
+		<div class="mui-content">
+         
+	<div class="paperset">
+		<p id="title"></p>
+	</div>
+			<ul class="mui-table-view">
+				<!-- <li class="mui-table-view-cell listfont">
+					<span>1.</span>
+					<span>下列单位中，是物理功率单位的是</span>
+					<div class="mui-input-row mui-radio mui-left listfont2">
+						<label>A.N</label>
+						<input name="radio1" type="radio">
+					</div>
+					<div class="mui-input-row mui-radio mui-left listfont2">
+						<label >B.s</label>
+						<input name="radio1" type="radio">
+					</div>
+					<div class="mui-input-row mui-radio mui-left listfont2">
+						<label>C.J</label>
+						<input name="radio1" type="radio">
+					</div>
+					<div class="mui-input-row mui-radio mui-left listfont2">
+						<label>D.W</label>
+						<input name="radio1" type="radio">
+					</div>
+				</li> -->
+			</ul>
+
+
+	<footer class="butn mui-content-padded" id="butn">
+		<button type="button" id="btn" class="meloclan-mui-btn mui-btn" >提交</button>
+	</footer>
+	</div>
+		<script type="text/javascript">
+			mui.init();
+			$(function(){
+				var id = storage.getItem($LOCALKAY_STUDENT_CLASSPRACTICE_UUID);
+				var paper;
+				var ans;
+				//加载答题数据
+				$.ajax("${basePath}proj/examinations/practicedetail.action",{
+					data:{"id":id},
+					type:"get",
+					dataType:"json",
+					cache:false,
+					async:false,
+					success:function(resp){
+						var data = resp.data;
+						if(resp && resp.success && data){
+							data = JSON.parse(data[0].paper);
+							$("#title").html(resp.data[0].name);
+							paper = data;
+							var html = "";
+							$(".mui-table-view").empty();
+							
+							$.each(data,function(index,value){
+								html += ("<li class=\"mui-table-view-cell listfont\"  answer="+value.answer+"  uuid="+value.uuid+">");
+								html += ("<span>"+(index+1)+" .</span>");
+								html += ("<span>"+value.stem+" .</span>");
+								var type = value.multi == 1 ? "checkbox":"radio";
+								var content = value.content;
+								$.each(content,function(i,v){
+									var v1 = v.value;
+									var height = 0;
+									var style = "";
+									if(v.type == "image"){
+										height = getHeight(v1)/2;
+										style = "top:"+height+"px";
+									}
+									html += ("<div class=\"mui-input-row mui-"+type+" mui-left listfont2\">");
+									html += ("<label>"+v.name+". "+v1+"</label>");
+									html += ("<input name='ques"+index+"' type="+type+" value="+v.name+" style="+style+"></div>");
+								});
+								html += ("</li>");
+							});
+							$(".mui-table-view").append(html);
+						}
+					},
+					error:function(){
+						mui.toast("请求失败");
+					}
+				});
+				mui('#butn').on('tap','#btn',function(){
+					var flag = true;
+					var index = 0;
+					var answerList = [];
+					//首先遍历是否有未完成的题目
+					$("li").each(function(i,v){
+						var value = "";
+						var input = $(v).find("input[name=ques"+i+"]:checked");
+						input.each(function(ii,vv){
+							value+=(vv.value);
+						});
+						if(value == null || value.length == 0){
+							flag = false;
+							index = i+1;
+							return false;
+						}
+						var obj = new Object();
+						var thisAnswer = $(this).attr("answer");
+						var uuid = $(this).attr("uuid");
+						var isright = value == thisAnswer?true:false;
+						obj.answer = value;
+						obj.uuid = uuid;
+						obj.isright = isright;
+						answerList.push(obj);
+					});
+					if(!flag){
+						mui.alert("请完成第"+(index)+"题","提示","确认");
+						return;
+					}
+					$("#btn").attr("disabled","disabled");
+					$.ajax("${basePath}proj/examinations/dopractice.action",{
+						data:{"data":JSON.stringify(answerList),"id":id},
+						async:false,
+						cache:false,
+						type:"post",
+						dataType:"json",
+						success:function(resp){
+							if(resp.success){
+								mui.openWindow({
+								  	url:'${basePath}Student/AnswerResult.html'
+								});
+							}
+							else{
+								if(resp.emsg){
+									mui.toast(resp.emsg);
+									if(resp.emsg.indexOf("已答题") == -1){
+										$("#btn").removeAttr("disabled");
+									}
+								}
+							}
+						},
+						error:function(){
+							$("#btn").removeAttr("disabled");
+						}
+					});
+					
+					}) 
+			});
+			function getHeight(data) {
+			    var div = document.createElement("div");
+			    $(div).html(data);
+			    return div.children[0].height;
+			}
+		</script>
+	</body>
+
+</html>

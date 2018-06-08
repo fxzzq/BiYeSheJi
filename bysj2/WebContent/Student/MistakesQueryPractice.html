@@ -1,0 +1,137 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>错题集</title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../_1/lib/mui/css/mui.min.css" rel="stylesheet" />
+		<link href="../_1/lib/mui/css/mui.picker.css" rel="stylesheet" />
+		<link href="../_1/lib/mui/css/mui.poppicker.css" rel="stylesheet" />
+	    <link href="css/MistakesCollection.css" rel="stylesheet"/>
+	    <script src="../_1/lib/mui/js/mui.min.js"></script>
+	    <script src="../_1/lib/mui/js/mui.picker.js"></script>
+		<script src="../_1/lib/mui/js/mui.poppicker.js"></script>
+		<script type="text/javascript" src="../_1/lib/jquery-1.7.2.min.js"></script>
+		<script type="text/javascript" src="../_1/js/Outside.js"></script>
+		<script type="text/javascript" src="../_1/js/Overall.js"></script>
+		<script type="text/javascript" src="../_1/js/StorageKeys.js"></script>
+	</head>
+	<body>
+		<header class="mui-bar mui-bar-nav">
+		<button type="button" class="mui-left mui-action-back mui-btn  mui-btn-link mui-btn-nav mui-pull-left">
+					<span class="mui-icon mui-icon-left-nav"></span>返回
+				</button>
+			<h1 class="mui-title">错题集筛选</h1>
+		</header>
+		<div class="mui-content" >
+				<ul id="uu" class="mui-table-view" >
+				<li class="mui-table-view-cell"  id="select1" >
+					<span class="mui-navigate-right " id='showUserPicker1' class="mui-btn mui-btn-block" ><font style="color: red;">*</font>类型<span id='userResult1' class="mui-ellipsis ui-alert formset" ></span></span> 						
+				</li>
+				<li class="mui-table-view-cell"  id="select2" >
+					<span class="mui-navigate-right " id='showUserPicker2' class="mui-btn mui-btn-block" >只选错题<span id='userResult2' class="mui-ellipsis ui-alert formset" ></span></span> 						
+				</li>
+			</ul>
+<footer class="butn mui-content-padded" id="butn" >
+				<button type="button" id="btn" class="meloclan-mui-btn mui-btn" >开始练习</button>
+			</footer>
+		</div>
+<script type="text/javascript">
+			mui.init();
+			(function($, doc) {
+				$.init();
+				$.ready(function() {
+					var _getParam = function(obj, param) {
+						return obj[param] || '';
+					};
+					var userPicker1 = new $.PopPicker();
+				/* 
+				 *获取错题集类型
+				 */	
+				$.ajax("/bysj2/proj/student/getmistaketype.action",{
+				type:"get",
+				async:false,
+				success:function(resp){	
+			    if(typeof(resp) == "string"){
+			        resp = JSON.parse(resp);
+			    }
+				var data = resp.data;
+				if(resp && resp.success&&data){
+		            var array = new Array();
+		            for(var i=0;i<data.length;i++){
+		                var a = new Object();
+		                a.value = data[i].creator;
+		                a.text = data[i].name + "(" + data[i].tname+")";
+		                array.push(a);
+		            }
+		            userPicker1.setData(array);
+				}
+				else{
+					if(resp.emsg){
+					
+						mui.toast(resp.emsg);
+					}
+						}
+				},
+				error:function(){
+				    	
+				    }
+			});
+			
+			
+					var showUserPickerButton1 = doc.getElementById('select1');
+					var userResult1 = doc.getElementById('userResult1');
+					showUserPickerButton1.addEventListener('tap', function(event) {
+						userPicker1.show(function(items) {
+							userResult1.innerText = items[0].text;
+							 var mistaketype=items[0].text;
+							 mistaketype = mistaketype.substring(0,mistaketype.lastIndexOf('('));
+							storage.setItem($LOCALKAY_STUDENT_MISTAKESQUERY_TYPE,mistaketype);
+							storage.setItem($LOCALKAY_STUDENT_MISTAKESQUERY_TACCOUNT,items[0].value);
+						});
+					}, false);
+					//不选择对错的情况  清空缓存
+					storage.removeItem($LOCALKAY_STUDENT_MISTAKESQUERY_TYPE);
+					storage.removeItem($LOCALKAY_STUDENT_MISTAKESQUERY_TACCOUNT);
+
+		var userPicker2 = new $.PopPicker();
+					userPicker2.setData([{
+						value: '1',
+						text: '否'
+					},{
+						value: '0',
+						text: '是'
+					}]);
+					var showUserPickerButton2 = doc.getElementById('select2');
+					var userResult2 = doc.getElementById('userResult2');
+					showUserPickerButton2.addEventListener('tap', function(event) {
+						userPicker2.show(function(items) {
+						 userResult2.innerText = items[0].text;
+							 var iscorrect=items[0].value;
+							storage.setItem($LOCALKAY_STUDENT_MISTAKESQUERY_iscorrect,iscorrect);
+						 
+							
+						});
+					}, false);
+					
+				});
+			})(mui, document);
+			//不选择对错的情况  清空缓存
+			 storage.removeItem($LOCALKAY_STUDENT_MISTAKESQUERY_iscorrect);
+            /* 
+			 *开始练习
+			 */	
+			mui('#butn').on('tap','#btn',function(){
+				var type = $("#userResult1").html();
+				if(type == ""){
+					mui.toast("请选择类型!");
+					return;
+				}
+			  mui.openWindow({
+			  	url:'MistakePracticeAnswer.html'
+			  });
+			}); 
+</script>
+	</body>
+
+</html>

@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title>教师端</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<!--标准mui.css-->
+		<link rel="stylesheet" href="../_1/lib/mui/css/mui.min.css">
+		<link rel="stylesheet" href="css/TeacherEndmenu.css" />
+        <link rel="stylesheet" type="text/css" href="font/iconfont.css">
+        <link rel="stylesheet" type="text/css" href="font2/iconfont.css">
+        <script type="text/javascript" src="../_1/js/Outside.js"></script>
+		<script type="text/javascript" src="../_1/js/StorageKeys.js"></script>
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<h1 class="mui-title">考试系统</h1>
+		</header>
+		<div class="mui-content">
+
+			<div id="tabbar" class="mui-control-content mui-active">
+
+				<ul class="mui-table-view mui-grid-view mui-grid-9">
+					<li class="mui-table-view-cell mui-media mui-col-xs-4 mui-col-sm-3 select1">
+					 	<div style="margin-top:20px;">
+							<i class="iconfont icon-shitikulianxi" style="color:#7dc5eb;font-size:50px "></i>
+							<div class="mui-media-body" >试题</div>
+						</div>
+					</li>
+					<li class="mui-table-view-cell mui-media mui-col-xs-4 mui-col-sm-3 select2" >
+						<div style="margin-top:20px;">
+							<i class="iconfont icon-shijuanzhongxin" style="color:#e98f36;font-size:50px "></i>
+							<div class="mui-media-body" >试卷</div>
+						</div>
+					</li>
+					<li class="mui-table-view-cell mui-media mui-col-xs-4 mui-col-sm-3 select3">
+						<div style="margin-top:20px;">
+							<i class="iconfont icon-zuoyezhongxin" style="color:#a686ba;font-size:50px "></i>
+						<div class="mui-media-body" >作业</div>
+						</div>
+					</li>
+					<li class="mui-table-view-cell mui-media mui-col-xs-4 mui-col-sm-3 select4">
+						<div style="margin-top:20px;">
+							<i class="iconfont icon-kaoqintongji" style="color:#4ed07d;font-size:50px "></i>
+						<div class="mui-media-body" >统计</div>
+						</div>
+					</li>
+					<li class="mui-table-view-cell mui-media mui-col-xs-4 mui-col-sm-3 select5">
+						<div style="margin-top:20px;">
+						<i class="iconfont icon-daoru-tianchong" style="color:#1296db;font-size:50px "></i>
+						<div class="mui-media-body" >试题导入</div>
+						</div>
+					</li>
+						<li class="mui-table-view-cell mui-media mui-col-xs-4 mui-col-sm-3 select6">
+						<div style="margin-top:20px;">
+						<i class="iconfont icon-banjiguanli" style="color:#13227a;font-size:50px "></i>
+						<div class="mui-media-body" >班级管理</div>
+						</div>
+					</li>
+					<li class="mui-table-view-cell mui-media mui-col-xs-4 mui-col-sm-3 select7">
+						<div style="margin-top:20px;">
+							<i class="iconfont icon-yicuoti" style="color:#4ed07d;font-size:50px "></i>
+						<div class="mui-media-body" >学生错题</div>
+						</div>
+					</li>
+				</ul>
+			</div>
+			</div>
+	</body>
+	<script src="../_1/lib/mui/js/mui.min.js"></script>
+	<script>
+			mui.init({
+				swipeBack: true //启用右滑关闭功能
+			});
+			var account = storage.getItem($LOCALKAY_TEACHER_USER);
+		   mui('.mui-table-view').on('tap','.select1',function(){
+		   if(account==""||account==null){
+		      mui.openWindow({
+		     	url:'tealogin2.html'
+		     });
+		     }
+		     else{
+		     mui.openWindow({
+		     	url:'ExamMange_main.html'
+		     });
+		     }
+		   });
+		         mui('.mui-table-view').on('tap','.select2',function(){
+		         if(account==""||account==null){
+		      mui.openWindow({
+		     	url:'tealogin2.html'
+		     });
+		     }
+		     else{
+		     mui.openWindow({
+		     	url:'PaperManager_main.html'
+		     });
+		     }
+		   });
+		         mui('.mui-table-view').on('tap','.select3',function(){
+		         if(account==""||account==null){
+		      mui.openWindow({
+		     	url:'tealogin2.html'
+		     });
+		     }
+		     else{
+		     mui.openWindow({
+		     	url:'Task_main.html'
+		     });
+		     }
+		   });
+		         mui('.mui-table-view').on('tap','.select4',function(){
+		        if(account==""||account==null){
+		      mui.openWindow({
+		     	url:'tealogin2.html'
+		     });
+		     }
+		     else{ 
+		     mui.openWindow({
+		     	url:'TermCount.html'
+		     });
+		     }
+		   });
+		     mui('.mui-table-view').on('tap','.select5',function(){
+		     
+		     if(account==""||account==null){
+		      mui.openWindow({
+		     	url:'tealogin2.html'
+		     });
+		     }
+		     else{
+		       mui.openWindow({
+		     	url:'AddShiti.html'
+		     });
+		     }
+		   });
+		    mui('.mui-table-view').on('tap','.select6',function(){
+		     
+		     if(account==""||account==null){
+		      mui.openWindow({
+		     	url:'tealogin2.html'
+		     });
+		     }
+		     else{
+		       mui.openWindow({
+		     	url:'classmange.html'
+		     });
+		     }
+		   });
+		    mui('.mui-table-view').on('tap','.select7',function(){
+			     
+			     if(account==""||account==null){
+			      mui.openWindow({
+			     	url:'tealogin2.html'
+			     });
+			     }
+			     else{
+			       mui.openWindow({
+			     	url:'mistakeshow_main.html'
+			     });
+			     }
+			   });
+	</script>
+
+</html>

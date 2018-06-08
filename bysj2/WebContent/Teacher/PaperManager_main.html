@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>试卷管理</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+		<link rel="stylesheet" href="../_1/lib/mui/css/mui.min.css">
+		<link href="css/PaperManager.css" rel="stylesheet" />
+		
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<button type="button" id="fanhui" class="mui-left mui-btn  mui-btn-link mui-btn-nav mui-pull-left">
+					<span class="mui-icon mui-icon-left-nav"></span>返回
+				</button>
+			<h1 class="mui-title">试卷管理</h1>
+		</header>
+		<div class="mui-content">
+				<div class="butn mui-content-padded" id="butn">
+				<button type="button" id="btn1" class="meloclan-mui-btn mui-btn">新增试卷</button>
+			</div>
+		</div>
+	</body>
+	<script src="../_1/lib/mui/js/mui.min.js"></script>
+	<script type="text/javascript">
+	document.getElementById("fanhui").addEventListener("tap",function(){
+		mui.openWindow({
+			url: 'index.html'
+		});
+	});
+		//启用双击监听
+		mui.init({
+			gestureConfig:{
+				doubletap:true
+			},
+			subpages:[{
+				url:'PaperManager_sub.html',
+				id:'PaperManager_sub',
+				styles:{
+					top: '45px',
+					bottom: '68px',
+				}
+			}]
+		});
+	
+		var contentWebview = null;
+		document.querySelector('header').addEventListener('doubletap',function () {
+			if(contentWebview==null){
+				contentWebview = plus.webview.currentWebview().children()[0];
+			}
+			contentWebview.evalJS("mui('#pullrefresh').pullRefresh().scrollTo(0,0,100)");
+		});
+		
+			
+			(function($) {
+				
+				
+				//第二个demo，向左拖拽后显示操作图标，释放后自动触发的业务逻辑
+			
+			var btnArray = ['确认', '取消'];
+				$('#OA_task_2').on('slideleft', '.mui-table-view-cell', function(event) {
+					var elem = this;
+					mui.confirm('确认删除该条记录？', 'Hello MUI', btnArray, function(e) {
+						if (e.index == 0) {
+							elem.parentNode.removeChild(elem);
+						} else {
+							setTimeout(function() {
+								$.swipeoutClose(elem);
+							}, 0);
+						}
+					});
+				});
+			})(mui);
+	</script>
+<script>
+	
+				mui('#butn').on('tap', '#btn1', function() {
+				mui.openWindow({
+					url: 'AddExamPaper.html'
+				});
+			});
+</script>
+</html>

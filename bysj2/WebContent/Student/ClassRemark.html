@@ -1,0 +1,75 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>评课</title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../_1/lib/mui/css/mui.min.css" rel="stylesheet" />
+		<link rel="stylesheet" href="css/ClassRemark.css" />
+	</head>
+	<script type="text/javascript" src="../_1/lib/jquery-1.7.2.min.js"></script>
+	<script type="text/javascript" src="../_1/js/Outside.js"></script>
+	<script src="../_1/lib/mui/js/mui.min.js"></script>
+	<script type="text/javascript" src="../_1/js/StorageKeys.js"></script>
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<h1 class="mui-title">评课</h1>
+		</header>
+		<div id="pullrefresh" class="mui-content mui-scroll-wrapper">
+			<div class="mui-scroll">
+				<ul class="mui-table-view  mui-table-view-striped mui-table-view-condensed">
+				</ul>
+			</div>
+		</div>
+		<script type="text/javascript">
+			mui.init();
+			var classindex = ["第一节课","第二节课","第三节课","第四节课","第五节课","第六节课","第七节课","第八节课","第九节课","第十节课"];
+			$(function(){
+				$.ajax("evaluation/getcourselist.action",{
+					type:"get",
+					async:false,
+					dataType:"json",
+					data:{"saccount":saccount},
+					success:function(resp){
+						var data = resp.data;
+						if(resp && resp.success && data){
+							$(".mui-table-view").empty();
+							var html = "";
+							$.each(data,function(i,v){
+								html+=("<li class='mui-table-view-cell " + (v.isasse==1?"success":"error") +"' courseindex='"+v.courseindex+"' taccount='"+v.taccount+"'>");
+								html+=("<div class=' mui-table'><div class='mui-table-cell mui-col-xs-10 listfont'>");
+								html+=("<h5 ><span>"+v.coursename+"</span><span>"+v.tname+"</span><span>第"+v.courseindex+"节课</span></h5></div>");
+								html+=("<div class='mui-table-cell mui-col-xs-2 mui-text-right'>");
+								html+=("<span class='mui-h5 success'>"+(v.isasse==1?"已评":"未评")+"</span></div></div></li>");
+							});
+							$(".mui-table-view").append(html);
+						}
+						else{
+							if(resp.emsg){
+								mui.toast(resp.emsg);
+							}
+						}
+					},
+				    error:function(){
+				    	
+				    }
+				});
+			});
+			
+			
+			mui('.mui-table-view').on('tap', '.mui-table-view-cell', function() {
+				var index = $(this).attr("courseindex");
+				var taccount = $(this).attr("taccount");
+				var url = 'Remark.html';
+				if($(this).hasClass("success")){
+					url = 'FinishRemark.html';
+				}
+				storage.setItem($LOCALKAY_STUDENT_REMARK_COURSEINDEX,index);
+				storage.setItem($LOCALKAY_STUDENT_REMARK_TACCOUNT,taccount);
+				mui.openWindow({
+					url: url
+				});
+			});
+		</script>		
+	</body>
+</html>

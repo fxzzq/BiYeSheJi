@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!-- Generated 2018-6-2 1:54:17 by Hibernate Tools 3.5.0.Final -->
+<hibernate-mapping>
+    <class name="com.xzq.entity.Stumistakes" table="STUMISTAKES">
+        <id name="id" type="java.lang.String">
+            <column name="ID" />
+            <generator class="assigned" />
+        </id>
+        <property name="sname" type="java.lang.String">
+            <column name="SNAME" />
+        </property>
+        <property name="type" type="java.lang.String">
+            <column name="TYPE" />
+        </property>
+        <property name="rightnum" type="java.lang.String">
+            <column name="RIGHTNUM" />
+        </property>
+        <property name="wrongnum" type="java.lang.String">
+            <column name="WRONGNUM" />
+        </property>
+        <property name="ctime" type="java.lang.String">
+            <column name="CTIME" />
+        </property>
+    </class>
+</hibernate-mapping>

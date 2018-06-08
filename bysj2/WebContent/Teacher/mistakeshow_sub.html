@@ -1,0 +1,144 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>学生错题展示</title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../_1/lib/mui/css/mui.min.css" rel="stylesheet" />
+		<link rel="stylesheet" href="css/EditPaper.css" />
+		<style>
+		img{
+		    max-width:80%;
+	        vertical-align: middle;
+	    }
+		span.top{display: block;}
+		.listfont3{
+       		margin-top: 0px;
+		}
+	    .leftbox{
+       		padding-left: 15px;
+		}
+		</style>
+	</head>
+	<body>
+		<div id="pullrefresh" class="mui-content mui-scroll-wrapper">
+			<div class="mui-scroll">
+
+				<div class="mui-input-row mui-search" >
+					<input type="search" id="searcher" onkeyup="javascript:if(event.keyCode==13){loadDataFromServer();}" class="mui-input-clear" placeholder="搜索">
+				</div>
+				<ul class="mui-table-view mui-table-view-striped mui-table-view-condensed">
+					<!-- <li class="mui-table-view-cell">
+						<div class="mui-input-row mui-left ">
+							<div class="mui-col-xs-6 mui-pull-left leftbox">
+							    <span class="mui-ellipsis listfont">张三</span>
+									<p>三年级</p>
+							</div>
+								<div class="mui-col-xs-6  mui-pull-right mui-text-right listfont3">
+								<span class="top">对：8，错：2</span>
+								<p>2015-09-08 13:09:59</p>
+							</div>
+						</div>
+					</li> -->
+				</ul>
+			</div>
+		</div>
+		<script type="text/javascript" src="../_1/lib/jquery-1.7.2.min.js"></script>
+		<script src="../_1/lib/mui/js/mui.js"></script>
+		<script src="../_1/js/StorageKeys.js"></script>
+		<script src="../_1/js/Outside.js"></script>
+		<script type="text/javascript">
+			//上拉加载结束标识
+			var isupend = false;
+			var start = cstart;
+			var limit = overall_limit_size;
+			//试卷名称
+			var name;
+			//是否上拉加载
+			var isup = false;
+			mui.init({
+				pullRefresh: {
+					container: '#pullrefresh',
+					down: {
+						auto:true,//首次进入页面下拉一次
+						callback: pulldownRefresh
+					},
+					up: {
+						callback: pullupRefresh
+					}
+				}
+			});
+			/**
+			 * 下拉刷新具体业务实现
+			 */
+			function pulldownRefresh() {
+				loadDataFromServer();
+				mui('#pullrefresh').pullRefresh().endPulldownToRefresh(); //refresh completed
+			}
+			/**
+			 * 上拉加载具体业务实现
+			 */
+			function pullupRefresh() {
+				mui('#pullrefresh').pullRefresh().endPullupToRefresh(isupend); //参数为true代表没有更多数据了。
+				loadDataFromServer(true);
+			}
+			/**
+			 *从服务器加载数据
+			 */
+			function loadDataFromServer(isup){
+				//下拉刷新需重置start
+				if(!isup){
+					start = 0;
+					isupend = false;
+				}
+				else{
+					//mui('#pullrefresh').pullRefresh().endPullupToRefresh(isupend);
+				}
+				var keyword = document.getElementById("searcher").value;
+				keyword = $.trim(keyword);
+				$.ajax("/bysj2/proj/examinations/getstumistakeslist.action",{
+					type:"post",
+					dataType:"json",
+					async:true,
+					data:{"limit":limit,"start":start,"keyword":keyword},
+					success:function(resp){
+						var data = resp.data;
+						if(resp.success && data){
+							//返回的数据小于每页条数，则表示没有更多数据了
+							if(data.length < overall_limit_size){
+								isupend = true;
+							}
+							//如果是下拉刷新
+							if(!isup){
+								mui('#pullrefresh').pullRefresh().refresh(true);
+								//则需要先清空列表
+								$(".mui-table-view").empty();
+							}
+							else{
+								mui('#pullrefresh').pullRefresh().endPullupToRefresh(isupend);
+							}
+							//记录start位置
+							start += data.length;
+							//填充dom数据
+							var html = "";
+							$.each(data,function(i,v){
+								html+=("<li class=\"mui-table-view-cell\"><div class=\"mui-input-row mui-left \"><div class=\"mui-col-xs-6 mui-pull-left leftbox\">"+
+								"<span class=\"mui-ellipsis listfont\">"+v.sname+"</span><p>"+v.type+"</p></div>");
+								html+=("<div class=\"mui-col-xs-6  mui-pull-right mui-text-right listfont3\"><span class=\"top\">对："+v.rightnum+"，错："+v.wrongnum+"</span>");
+								html+=("<p>"+v.ctime+"</p></div></div></li>");
+							});
+							$(".mui-table-view").append(html);
+						}
+						else{
+							mui.toast("查询试题失败!");
+						}
+					},
+					error:function(resp){
+						mui.toast("服务器请求失败!");
+					}
+				});
+			}
+		</script>
+	</body>
+
+</html>

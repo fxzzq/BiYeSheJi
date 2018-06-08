@@ -1,0 +1,119 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link rel="stylesheet" href="../_1/lib/mui/css/mui.min.css"  />
+		<link rel="stylesheet" href="css/Paper.css" />
+		<script src="../_1/lib/mui/js/mui.min.js"></script>
+		<script type="text/javascript" src="../_1/lib/jquery-1.7.2.min.js"></script>
+		<script type="text/javascript" src="../_1/js/Outside.js"></script>
+		<script type="text/javascript" src="../_1/js/Overall.js"></script>
+		<script type="text/javascript" src="../_1/js/StorageKeys.js"></script>
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+		<button type="button" class="mui-left mui-action-back mui-btn  mui-btn-link mui-btn-nav mui-pull-left">
+					<span class="mui-icon mui-icon-left-nav"></span>返回
+				</button>
+			<h1 class="mui-title">试卷</h1>
+		</header>
+
+		<div class="mui-content">
+
+			<div class="paperset">
+				<p id="xzq"></p>
+				<p id="listfont2">
+					<span id="type"></span>
+					
+
+				</p>
+			</div>
+
+			<ul class="mui-table-view">
+			
+			</ul>
+
+			<footer class="butn mui-content-padded" id="butn">
+				<button type="button" id="btn" class="meloclan-mui-btn mui-btn">布置作业</button>
+			</footer>
+		</div>
+		
+		<script type="text/javascript">
+		
+			
+			$(function(){
+			
+		var uuid = storage.getItem($LOCALKAY_TEACHER_PAPERMANAGER_UUID);
+		
+				$.ajax("/bysj2/proj/examinations/getpaperdetail.action",{
+					type:"get",
+					async:false,
+					dataType:"json",
+					data:{"uuid":uuid},
+					success:function(resp){
+						var data = resp.data[0];
+						if(resp && resp.success && data){
+							$(".mui-table-view").empty();
+							var html = "";
+							var questions=JSON.parse(data.questions);
+							var name=document.getElementById("xzq");
+							var type=document.getElementById("type");
+							var papername=data.name;
+							   name.innerHTML=data.name;
+							   type.innerHTML=data.type;
+							   
+						storage.setItem($LOCALKAY_TEACHER_ARRANGETASK_PAPERNAME,papername);
+							
+							$.each(questions,function(i,v){
+							
+							var content = questions[i].content;
+                             //alert(contnet.length);
+							html+=("<li class='mui-table-view-cell'>"+"<p class='listfont'>"+"<span>"+(i+1)+"."+"</span>"+
+						            "<span>"+v.stem+"</span>"+"</p><p class='mui-input-row mui-left listfont2'>");
+									
+									
+									for(var i=0;i<content.length;i++){
+									if(v.content[i].type=="charactor"){
+									html+=("<span>"+v.content[i].name+".  "+v.content[i].value+"</span>");
+									}
+									if(v.content[i].type=="image"){
+								    	html+=("<span>"+v.content[i].name+".  "+v.content[i].value+"</span>");
+								    }
+									} 
+						          	html+=("</p></li>");
+							});
+							$(".mui-table-view").append(html);
+						}
+						else{
+							if(resp.emsg){
+								mui.toast(resp.emsg);
+							}
+						}
+					},
+				    error:function(){
+				    	
+				    }
+				});
+			});
+			
+		
+			
+			
+			
+			
+			
+			mui.init();
+			
+			mui('#butn').on('tap', '#btn', function() {
+				mui.openWindow({
+					url: 'ArrangeTask.html'
+				});
+			})
+		</script>
+	</body>
+
+</html>

@@ -1,0 +1,279 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title>布置作业</title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../_1/lib/mui/css/mui.min.css" rel="stylesheet" />
+		<link href="css/ArrangePaper.css" rel="stylesheet" />
+		<link href="../_1/lib/mui/css/mui.picker.css" rel="stylesheet" />
+		<link href="../_1/lib/mui/css/mui.poppicker.css" rel="stylesheet" />
+	    <script src="../_1/lib/mui/js/mui.min.js"></script>
+	    <script src="../_1/lib/mui/js/mui.picker.js"></script>
+		<script src="../_1/lib/mui/js/mui.poppicker.js"></script>
+		<script type="text/javascript" src="../_1/lib/jquery-1.7.2.min.js"></script>
+		<script type="text/javascript" src="../_1/js/Outside.js"></script>
+		<script type="text/javascript" src="../_1/js/Overall.js"></script>
+		<script type="text/javascript" src="../_1/js/StorageKeys.js"></script>
+		<style type="text/css">	
+   #name{
+		        margin-top:15px;
+		        height:50px;
+		    }
+      .mui-input-row label{
+		        padding:16px 15px;
+		    }
+		    .mui-input-row input{
+		        height:100%;
+		        padding-right: 65px;
+		        text-align: right;
+		    }
+	</style>
+	</head>
+
+	<body>
+
+		<header class="mui-bar mui-bar-nav">
+			<button type="button" class="mui-left mui-action-back mui-btn  mui-btn-link mui-btn-nav mui-pull-left">
+					<span class="mui-icon mui-icon-left-nav"></span>返回
+				</button>
+			<h1 class="mui-title">布置作业</h1>
+		</header>
+
+		<div class="mui-content">
+			
+			 <form action="" method="get">
+		            <div class="mui-input-group">
+				<div class="mui-input-row" id="name">
+					<label><font style="color:red;">*</font>名称</label>
+					<input type="text" class="mui-input-clear"   id="inputset" placeholder="名称">
+				</div>
+			</div>      		
+				<ul id="uu" class="mui-table-view" >
+						
+				<li class="mui-table-view-cell"  id="select1" >
+					<span class="mui-navigate-right  " id='showUserPicker' class="mui-btn mui-btn-block" ><span style="color: red;">* </span>试卷<span id='userResult' class="mui-ellipsis ui-alert formset" ></span></span> 						
+				</li>
+				<li class="mui-table-view-cell"  id="select2" >
+					<span class="mui-navigate-right " id='showUserPicker1' class="mui-btn mui-btn-block" ><span style="color: red;">* </span>班级<span id='userResult1' class="mui-ellipsis ui-alert formset"></span><span id='classResultID1' style="display:none;"></span></span> 						
+				</li>
+				<li class="mui-table-view-cell"  id="select3" >
+					<span class="mui-navigate-right " id='showUserPicker2' class="mui-btn mui-btn-block" ><span style="color: red;">* </span>类型<span id='userResult2' class="mui-ellipsis ui-alert formset"></span></span> 						
+				</li>
+				<textarea id="textarea" rows="5" placeholder="  备注"></textarea>
+				
+			</ul>
+
+			<footer class="butn mui-content-padded" id="butn">
+				<button type="button" id="btn" class="meloclan-mui-btn mui-btn mui-btn-success " >确定</button>
+			</footer>
+			
+			</form>
+		</div>
+		<script type="text/javascript">
+		mui.init();		
+			(function($, doc) {
+				$.init();
+				$.ready(function() {
+
+					var _getParam = function(obj, param) {
+						return obj[param] || '';
+					};
+					//试卷列表
+					var userPicker = new $.PopPicker();
+					
+					$.ajax("/bysj2/proj/examinations/getmypaperlist.action",{
+				type:"get",
+				async:false,
+				data:{"istotal":true},
+				success:function(resp){	
+			    if(typeof(resp) == "string"){
+			        resp = JSON.parse(resp);
+			    }
+				var data = resp.data;
+				if(resp && resp.success&&data){
+		            var array = new Array();
+		            for(var i=0;i<data.length;i++){
+		                var a = new Object();
+		                a.value = data[i].id;
+		                a.text = data[i].name;
+		                array.push(a);
+		            }
+		            userPicker.setData(array);
+				}
+				else{
+					if(resp.emsg){
+					
+						mui.toast(resp.emsg);
+					}
+						}
+				},
+				error:function(){
+				    	
+				    }
+			});
+					
+					
+					
+					
+					
+					var showUserPickerButton = doc.getElementById('select1');
+					var userResult = doc.getElementById('userResult');
+					//获取试卷名
+					var papername = storage.getItem($LOCALKAY_TEACHER_ARRANGETASK_PAPERNAME);
+					showUserPickerButton.addEventListener('tap', function(event) {
+						userPicker.show(function(items) {
+							userResult.innerText = items[0].text;
+						});
+					}, false);
+		       document.getElementById("userResult").innerHTML=papername;	
+		       document.getElementById("inputset").value=papername;
+					
+					
+		/*
+		 *获取我的班级列表
+		 *
+         */
+         var userPicker1 = new $.PopPicker();
+		$.ajax("bysj2/proj/examinations/getmyclass.action",{
+				type:"get",
+				async:false,
+				success:function(resp){	
+			    if(typeof(resp) == "string"){
+			        resp = JSON.parse(resp);
+			    }
+				var data = resp.data;
+				if(resp && resp.success&&data){
+		            var array = new Array();
+		            for(var i=0;i<data.length;i++){
+		                var a = new Object();
+		                a.value = data[i].id;
+		                a.text = data[i].name;
+		                array.push(a);
+		            }
+	                userPicker1.setData(array);
+				}
+				else{
+					if(resp.emsg){
+					
+						mui.toast(resp.emsg);
+					}
+						}
+				},
+				error:function(){
+				    	
+				    }
+			});
+					
+					
+					
+					
+					var showUserPickerButton1 = doc.getElementById('select2');
+					var userResult1 = doc.getElementById('userResult1');
+					showUserPickerButton1.addEventListener('tap', function(event) {
+						userPicker1.show(function(items) {
+							//userResult.innerText = JSON.stringify(items[0]);
+							classResultID1.innerText = items[0].value;
+							userResult1.innerText = items[0].text;
+
+							//返回 false 可以阻止选择框的关闭
+							//return false;
+						});
+					}, false);
+
+					var userPicker2 = new $.PopPicker();
+					userPicker2.setData([{
+						value: '01',
+						text: '随堂练习'
+					}, {
+						value: '02',
+						text: '课后作业'
+					}]);
+					var showUserPickerButton2 = doc.getElementById('select3');
+					var userResult2 = doc.getElementById('userResult2');
+					showUserPickerButton2.addEventListener('tap', function(event) {
+						userPicker2.show(function(items) {
+							//userResult.innerText = JSON.stringify(items[0]);
+							userResult2.innerText = items[0].text;
+
+							//返回 false 可以阻止选择框的关闭
+							//return false;
+						});
+					}, false);
+
+				});
+			})(mui, document);
+			
+			
+			/*
+			*布置作提交 
+			*
+			*/
+             document.getElementById("btn").addEventListener("tap",function(e){
+             
+             var name=document.getElementById("inputset").value;	
+		    var paper_uuid = storage.getItem($LOCALKAY_TEACHER_PAPERMANAGER_UUID);
+			var classid=document.getElementById("classResultID1").innerText;
+			var type=document.getElementById("userResult2").innerText;
+			var info=document.getElementById("textarea").value;
+			if(!validate()){return;}
+			$("#btn").attr("disabled","disabled");
+				$.ajax("/bysj2/proj/examinations/arrange.action",{
+				type:"post",
+				dataType:"json",
+				async:false,
+				data:{"name":name,"paper_uuid":paper_uuid,"classid":classid,"type":type,"info":info},
+				success:function(resp){	
+				if(resp && resp.success){
+					
+					mui.openWindow({
+					  	url:'Task_main.html'
+					  });
+				}
+				else{
+					$("#btn").removeAttr("disabled");
+					if(resp.emsg){
+					
+						mui.toast(resp.emsg);
+					}
+						}
+				},
+				error:function(){
+					$("#btn").removeAttr("disabled");
+				    }
+			});
+             
+             });
+			function validate(){
+				 //前端校验
+			  var inputset = document.getElementById('inputset');
+			  var userResult = document.getElementById('userResult');
+			  var userResult1 = document.getElementById('userResult1');
+			  var userResult2 = document.getElementById('userResult2');
+			  
+			   if((userResult.innerText==null)||(userResult.innerText=="")){
+			  mui.toast("试卷名称未选");
+			   return false;
+			   }
+			   else if((inputset.value==null)||(inputset.value=="")){
+			    mui.toast("布置作业名称未填写");
+			   return false;
+			   }
+			   else if((userResult1.innerText==null)||(userResult1.innerText=="")){
+			    mui.toast("班级未选择");
+			   return false;
+			   }
+			   else if((userResult2.innerText==null)||(userResult2.innerText=="")){
+			    mui.toast("类型未选择");
+			   return false;
+			   }
+			   else{
+				   return true;
+			   }
+				}
+		</script>
+
+	</body>
+
+</html>

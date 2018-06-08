@@ -1,0 +1,76 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>试题详情</title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../_1/lib/mui/css/mui.min.css" rel="stylesheet" />
+		<link href="css/test.css" rel="stylesheet" />
+		<script src="../_1/lib/mui/js/mui.min.js"></script>
+		<script type="text/javascript" src="../_1/lib/jquery-1.7.2.min.js"></script>
+		<script type="text/javascript" src="../_1/js/Outside.js"></script>
+		<script type="text/javascript" src="../_1/js/Overall.js"></script>
+		<script type="text/javascript" src="../_1/js/StorageKeys.js"></script>
+		<script type="text/javascript">
+			mui.init()
+		</script>
+	</head>
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<button type="button" class="mui-left mui-action-back mui-btn  mui-btn-link mui-btn-nav mui-pull-left">
+					<span class="mui-icon mui-icon-left-nav"></span>返回
+				</button>
+			<h1 class="mui-title">试题</h1>
+		</header>
+		<div class="mui-content">
+		</div>
+		<div>
+			<ul class="mui-table-view">
+			</ul>
+		</div>
+		<script type="text/javascript">
+			$(function(){
+		var uuid = storage.getItem($LOCALKAY_TEACHER_EXAMEMANAGER_UUID);
+				$.ajax("/bysj2/proj/examinations/getquestiondetail.action",{
+					type:"get",
+					async:false,
+					dataType:"json",
+					data:{"uuid":uuid},
+					success:function(resp){
+						var data = resp.data;
+						if(resp && resp.success && data){
+							$(".mui-table-view").empty();
+							var html = "";
+							$.each(data,function(i,v){
+							html+=("<li class='mui-table-view-cell'>"+"<p class='listfont'>"+
+						            "<span>"+v.stem+"</span>"+"</p><p class='mui-input-row mui-left listfont2'>");
+									var length=JSON.parse(v.content).length;
+									for(var i=0;i<length;i++){
+										if(JSON.parse(v.content)[i].type=="charactor"){
+									html+=("<span>"+JSON.parse(v.content)[i].name+".  "+JSON.parse(v.content)[i].value+"</span>");
+									}
+										if(JSON.parse(v.content)[i].type=="image"){
+								    	html+=("<span>"+JSON.parse(v.content)[i].name+".  "+JSON.parse(v.content)[i].value+"</span>");
+								    }
+									
+									}
+						          	html+=("</p>"+
+								          "<p class='listfont'><b>答案:"+v.answer+"</b></p>"+
+									      "<br /><p class='listfont'><b>解析:<span>"+v.analysis+"</span></b></p></li>");  
+							});
+							$(".mui-table-view").append(html);
+						}
+						else{
+							if(resp.emsg){
+								mui.toast(resp.emsg);
+							}
+						}
+					},
+				    error:function(){
+				    	
+				    }
+				});
+			});
+		</script>
+	</body>
+</html>

@@ -1,0 +1,124 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title>新增试卷</title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../_1/lib/mui/css/mui.min.css" rel="stylesheet" />
+		<link href="../_1/lib/mui/css/mui.picker.css" rel="stylesheet" />
+		<link href="../_1/lib/mui/css/mui.poppicker.css" rel="stylesheet" />
+		<link href="css/ArrangePaper.css" rel="stylesheet" />
+		<link href="css/AddExamPaper.css" rel="stylesheet" />
+		<style>
+		    #name{
+		        margin-top:15px;
+		        height:50px;
+		    }
+		    #keywords{
+		        height:50px;
+		    }
+		    .mui-input-row label{
+		        padding:16px 15px;
+		    }
+		    .mui-input-row input{
+		        height:100%;
+		        padding-right: 35px;
+		        text-align: right;
+		    }
+		   .mui-input-row>span{
+		       height:50px !important;
+		       line-height: 50px;
+		       top:0px !important;
+		   }
+		   #typeresult{
+		       margin-right: 20px;
+		       width:77%;
+		       text-align: right;
+		   }
+		   
+		   
+		</style>
+	</head>
+
+	<body>
+		<script src="../_1/lib/jquery-1.7.2.min.js"></script>
+		<script src="../_1/js/StorageKeys.js"></script>
+		<script src="../_1/js/Outside.js"></script>
+		<script src="../_1/lib/mui/js/mui.min.js"></script>
+		<script src="../_1/lib/mui/js/mui.picker.js"></script>
+		<script src="../_1/lib/mui/js/mui.poppicker.js"></script>
+		<header class="mui-bar mui-bar-nav">
+			<button type="button" class="mui-left mui-action-back mui-btn  mui-btn-link mui-btn-nav mui-pull-left">
+					<span class="mui-icon mui-icon-left-nav"></span>返回
+				</button>
+			<h1 class="mui-title">新增试卷</h1>
+		</header>
+
+		<div class="mui-content">
+			<div class="mui-input-group">
+				<div class="mui-input-row" id="name">
+					<label><font style="color:red;">*</font>试卷名称</label>
+					<input type="text" class="mui-input-clear" placeholder="试卷名称">
+				</div>
+			</div>
+			
+			<ul class="mui-table-view" style="margin-top: 10px;">
+				<li class="mui-table-view-cell" id="typepicker" style="height:50px;line-height: 30px;">
+					<span class="mui-navigate-right" class="mui-btn mui-btn-block" ><span style="color: red;">* </span>类型<span id='typeresult' class="mui-pull-right mui-ellipsis" ></span></span> 						
+				</li>
+			</ul>
+		</div>
+		<footer class="butn mui-content-padded" id="butn">
+			<button type="button" id="btn" class="meloclan-mui-btn mui-btn">编辑试题</button>
+		</footer>
+		<script type="text/javascript">
+			mui.init();
+			var types;
+			$(function(){
+				getTypes();
+				if(types == null || types == undefined || types.length == 0){
+					mui.toast("暂无试题类型，请先添加试题!");
+					return;
+				}
+				var picker = new mui.PopPicker();
+				picker.setData(types);
+				document.getElementById("typepicker").addEventListener("tap",function(e){
+					picker.show(function (selectItems) {
+						$("#typeresult").html(selectItems[0]);
+				  })
+				});
+			});
+			document.getElementById("btn").addEventListener("tap",function(e){
+				var name = $("#name>input").val();
+				var type = $("#typeresult").html();
+				if(!name || !type || $.trim(name)=="" || $.trim(type) == ""){
+					mui.toast("请先完善试题信息");
+					return;
+				}
+				storage.setItem($LOCALKAY_TEACHER_PAPER_NEWPAPERNAME,name);
+				storage.setItem($LOCALKAY_TEACHER_PAPER_NEWPAPERTYPE,type);
+				mui.openWindow({
+					url: 'EditPaper_main.html'
+				});
+			});
+			function getTypes(){
+				$.ajax("/bysj2/proj/examinations/gettypes.action",{
+					type:"get",
+					dataType:"json",
+					async:false,
+					success:function(resp){
+						var data = resp.data;
+						if(resp.success){
+							types = data;
+						}
+						else{
+							mui.toast("查询试题类型失败!");
+						}
+					}
+				});
+			}
+		</script>
+	</body>
+
+</html>

@@ -1,0 +1,60 @@
+*{
+	margin: 0px;
+	padding: 0px;
+}
+/*#title{
+	background: #7CFC00;
+	height: 50px;
+	
+}*/
+#title h3{
+
+	text-align: center;
+	padding-top: 10px;
+}
+img{
+	max-width:80%;
+	vertical-align: middle;
+}
+
+.mui-bar .mui-btn-link {
+	font-size: 16px;
+	line-height: 44px;
+	top: 0;
+	padding: 0;
+	color: #00C89D;
+	border: 0
+}
+
+.listfont{
+	color: #1F1F1F;
+	font-size: 15px;
+	font-weight: normal;
+}
+.listfont2 span{
+	margin: 15px 30px;
+	color: #717171;
+	font-size: 14px;
+	display:block;
+}
+.mui-table-view-cell:after {
+	position: absolute;
+	right: 0;
+	bottom: 0;
+	left: 0px;
+	height: 1px;
+	content: '';
+	-webkit-transform: scaleY(.5);
+	transform: scaleY(.5);
+	background-color: #c8c7cc
+}
+a {
+	text-decoration: none;
+	color: #00C89D
+}
+a:active {
+	color: #00C89D
+}
+.mui-title{
+	font-weight: bold;
+}

@@ -1,0 +1,147 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title>答题结果</title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="${basePath}_1/lib/mui/css/mui.min.css" rel="stylesheet" />
+		<link rel="stylesheet" href="${basePath}Student/css/AnswerResult.css" />
+		<style type="text/css">
+		    .mui-input-row img{
+	        max-width:80%;
+	        max-height:150px;
+	        vertical-align: middle;
+	    }
+	    .mui-table-view-cell img{
+	        vertical-align: middle;
+	    }
+		</style>
+	</head>
+
+	<body>
+	<script type="text/javascript" src="${basePath}_1/lib/jquery-1.7.2.min.js"></script>
+	<script type="text/javascript" src="${basePath}_1/js/Outside.js"></script>
+	<script src="${basePath}_1/lib/mui/js/mui.min.js"></script>
+	<script type="text/javascript" src="${basePath}_1/js/StorageKeys.js"></script>
+		<header class="mui-bar mui-bar-nav">
+			<button type="button" id="fanhui" class="mui-left mui-action-back mui-btn  mui-btn-link mui-btn-nav mui-pull-left">
+					<span class="mui-icon mui-icon-left-nav"></span>返回
+				</button>
+			<h1 class="mui-title">答题结果</h1>
+		</header>
+		<div class="mui-content">
+			<div class="paperset">
+				<p id="title"></p>
+			</div>
+			<div class="countResult">
+				<p>对/错:&nbsp;<span class="success"></span><span>/</span><span class="error"></span></p>
+			</div>
+			<ul class="mui-table-view ">
+				<!-- <li class="mui-table-view-cell">
+					<div class="mui-table">
+						<div class="mui-table-cell mui-col-xs-10 listfont">
+		                    <span>1.</span>
+			                <span>下列单位中，是物理功率单位的是</span>
+							<div class="mui-input-row mui-radio mui-left listfont2">
+								<label>A.N</label>
+								<input name="0" type="radio" disabled="disabled">
+							</div>
+							<div class="mui-input-row mui-radio mui-left listfont2">
+								<label >B.s</label>
+								<input name="0" type="radio" disabled="disabled" >
+							</div>
+							<div class="mui-input-row mui-radio mui-left listfont2">
+								<label>C.J</label>
+								<input name="0" type="radio" disabled="disabled">
+							</div>
+							<div class="mui-input-row mui-radio mui-left listfont2">
+								<label>D.W</label>
+								<input name="0" type="radio" checked="checked" >
+							</div>
+		                </div>
+						<div class="mui-table-cell mui-col-xs-2 mui-text-right">
+		                    <span class="mui-h5 success">对</span>
+		                </div>
+					</div>
+				</li> -->
+			</ul>
+		</div>
+		<script src="${basePath}_1/lib/mui/js/mui.min.js"></script>
+		<script type="text/javascript">
+			mui.init();
+			$(function(){
+				var id = storage.getItem($LOCALKAY_STUDENT_CLASSPRACTICE_UUID);
+				//加载答题数据
+				$.ajax("${basePath}proj/examinations/finishpractice.action",{
+					data:{"id":id},
+					type:"get",
+					dataType:"json",
+					async:false,
+					success:function(resp){
+						var data = resp.data;
+						if(resp && resp.success && data){
+							data = JSON.parse(data[0].paper);
+							var title = resp.data[0].name;
+							var answer = JSON.parse(resp.data[0].answer);
+							var wrongNum = 0;
+							var rightNum = 0;
+							var html = "";
+							$(".mui-table-view").empty();
+							$.each(data,function(index,value){
+								html += ("<li class=\"mui-table-view-cell\"><div class=\"mui-table\"><div class=\"mui-table-cell mui-col-xs-10 listfont\">");
+								html += ("<span>"+(index+1)+" .</span>");
+								html += ("<span>"+value.stem+" .</span>");
+								var type = value.multi == 1 ? "checkbox":"radio";
+								var content = value.content;
+								$.each(content,function(i,v){
+									var v1 = v.value;
+									var height = 0;
+									var style = "";
+									if(v.type == "image"){
+										height = getHeight(v1)/2;
+										style = "top:"+height+"px";
+									}
+									var checked = "";
+									if(type == "radio"){
+										if(answer[index].answer == v.name){
+											checked = "checked";
+										}
+									}
+									else{
+										var str = answer[index].answer;
+										for(var ii = 0;ii<str.length;ii++){
+											if(str.charAt(ii) == v.name){
+												checked = "checked";
+											}
+										}
+									}
+									html += ("<div class=\"mui-input-row mui-"+type+" mui-left listfont2\">");
+									html += ("<label>"+v.name+". "+v1+"</label>");
+									html += ("<input disabled name='ques"+index+"' type="+type+" value="+v.name+ " "+checked+" style="+style+" ></div>");
+								});
+								var isright = answer[index].isright;
+								isright?(rightNum++):(wrongNum++);
+								var su = isright?"success":"error";
+								var sut = isright?"对":"错";
+								html +=("</div><div class=\"mui-table-cell mui-col-xs-2 mui-text-right\">");
+								html +=("<span class=\"mui-h5 " + su +"\">"+sut+"</span></div></div>");
+								html += ("</li>");
+							});
+							$(".countResult").find(".success").html(rightNum);
+							$(".countResult").find(".error").html(wrongNum);
+							$("#title").html(title);
+							$(".mui-table-view").append(html);
+						}
+					}
+				});
+			});
+			function getHeight(data) {
+			    var div = document.createElement("div");
+			    $(div).html(data);
+			    return div.children[0].height;
+			}
+		</script>
+	</body>
+
+</html>

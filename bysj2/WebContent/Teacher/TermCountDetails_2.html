@@ -1,0 +1,196 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>学期统计详情</title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../_1/lib/mui/css/mui.min.css" rel="stylesheet" />
+		<link rel="stylesheet" href="css/TermCountDetails_2.css" />
+		<script src="../_1/lib/mui/js/mui.min.js"></script>
+		<script type="text/javascript" src="../_1/lib/jquery-1.7.2.min.js"></script>
+		<script type="text/javascript" src="../_1/js/Outside.js"></script>
+		<script type="text/javascript" src="../_1/js/Overall.js"></script>
+		<script type="text/javascript" src="../_1/js/StorageKeys.js"></script>	
+	</head>
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<button type="button" class="mui-left mui-action-back mui-btn  mui-btn-link mui-btn-nav mui-pull-left">
+					<span class="mui-icon mui-icon-left-nav"></span>返回
+				</button>
+			<h1 class="mui-title">学期统计详情</h1>
+		</header>
+		<div class="mui-content">
+			<div id="title">
+			<p id="xzq"></p>
+  			<p id="xzq1"></p>     
+		<div class="tablestyle">
+			<div class="t_left">
+				<table>
+					<tr>
+						<th>姓名</th>
+					</tr>
+				</table>
+				<div class="cl_freeze" id="cl_freeze">
+					<table  class="leftname">
+						
+					</table>
+				</div>
+			</div>
+
+			<div class="t_r">
+			<div class="t_r_t" id="t_r_t">
+					<div class="t_r_title">
+						<table id="test">
+							
+						</table>
+					</div>
+				</div> 
+				<div class="t_r_content" id="t_r_content" onscroll="aa()">
+					<table class="rightcontent">
+						<tr class="rightnameTP">
+								<th>正确率</th>
+							
+						</tr>
+					</table>
+				</div>
+			</div>
+
+		</div>
+		</div>
+</div>
+<script>
+   /*
+	*
+	*学期统计详情 
+	 */
+    var classid = storage.getItem($LOCALKAY_TEACHER_CLASS_CLASSID);
+	var sdate = storage.getItem($LOCALKAY_TEACHER_TERM_SDATE);
+	var edate = storage.getItem($LOCALKAY_TEACHER_TERM_EDATE);
+	//显示表格的标题
+	var termname= storage.getItem($LOCALKAY_TEACHER_TERM_NAME);
+	var classname = storage.getItem($LOCALKAY_TEACHER_CLASS_CLASSNAME);
+	document.getElementById("xzq").innerHTML=termname+classname;
+	
+	$.ajax("/bysj2/proj/examinations/gettermstatistics.action",{
+				type:"get",
+				async:false,
+				data:{"classid":classid,"sdate":sdate,"edate":edate},
+				success:function(resp){	
+			    if(typeof(resp) == "string"){
+			        resp = JSON.parse(resp);
+			    }
+				var data = resp.data;
+				var htmlleftname = "";
+				var htmlrighttitle="";
+				var htmlrightcontent="";
+	            var correctrate="";
+	            var thiscorrectrate1=""; 
+	            var thiscorrectrate2=""; 
+	            var  result1=0;
+	            var  result2=0;
+		        var  allresult1=0;
+		        var stuaccount=new Array();
+		        var  stutmp=new Array();
+		        var datelist=new Array();
+		        var tmp = new Array();
+				if(resp && resp.success&&data){
+				//如果没有数据
+				if(data.length==0){
+				$(".tablestyle").empty();
+				document.getElementById("xzq1").innerHTML="没有学期统计数据！";
+				}
+				else{
+				//获取姓名   存入数组
+					 for(var i=0;i<data.length;i++){
+		          	    stuaccount[i]=data[i].name;
+		          	    	}
+		          	 for(var i in stuaccount){
+					      //该元素在tmp内部不存在才允许追加
+					if(stutmp.indexOf(stuaccount[i])==-1){
+					stutmp.push(stuaccount[i]);
+					}
+					} 	
+		          	    //日期存储
+		          	     for(var i=0;i<data.length;i++){
+		          	     datelist[i]=data[i].date;
+		              	}
+					     // 遍历datelist，把元素分别放入tmp数组(不存在才放)
+					for(var i in datelist){
+					      //该元素在tmp内部不存在才允许追加
+					if(tmp.indexOf(datelist[i])==-1){
+					tmp.push(datelist[i]);
+					}
+					} 
+				     //姓名展示
+ 					 for(var j=0;j<stutmp.length;j++){
+		               htmlleftname+=("<tr><td>"+stutmp[j]+"</td></tr>");
+		               }
+				     //日期展示
+				 for(var j=0;j<tmp.length;j++){
+ 					 
+		               htmlrighttitle+=("<th>"+tmp[j]+"</th>");
+		               }
+			      //数据展示
+		         	for(var z=0;z<stutmp.length;z++){
+		               	for(var y=0;y<tmp.length;y++){
+		               	   for(var i=0;i<data.length;i++){
+			              if(data[i].date==tmp[y]&&data[i].name==stutmp[z]){
+			                var  result=data[i].rightnum;
+		      				var  allresult=data[i].total;
+		                 result1+=result; //总的正确个数
+		                 allresult1+= allresult;//总的题的个数、
+		                 //去除页面显示NaN
+		                 if(allresult1==0){
+		                 var resultrate=0;
+		                 }
+		                 else{
+		                   var   resultrate=result1/allresult1; //每个学生的学期正确率 
+		                 }
+		                
+			             //去除页面显示NaN
+			             if(data[i].total==0){
+			             var  result2=0;
+			             }
+			             else{
+			              var  result2=(data[i].rightnum)/(data[i].total); //每个学生一天的正确率
+			             }
+		               
+		                
+ 				     thiscorrectrate2+=("<td style='"+((result2.toFixed(2)*100)<50?"color:red":"")+"'>"+(result2*100).toFixed(2)+"%</td>");
+		                     }
+		                 }
+
+		               }
+		                  thiscorrectrate1="<tr>"+"<td style='"+(((resultrate.toFixed(2))*100).toFixed()<50?"color:red":"")+"'>";
+		                  thiscorrectrate1+=(resultrate*100).toFixed(2)+"%</td>"+thiscorrectrate2+"</tr>";
+		                   $(".rightcontent").append(thiscorrectrate1); 
+		                   thiscorrectrate2=""; //清空td
+		                   result1=0;    //清空总的正确个数
+		                   allresult1=0; //清空总的题的个数
+		             }    	
+		         $(".leftname").append(htmlleftname); 
+		         $(".rightnameTP").append(htmlrighttitle); 
+		         }
+				}
+				else{
+					if(resp.emsg){
+					
+						mui.toast(resp.emsg);
+					}
+						}
+				},
+				error:function(){
+				    	
+				    }
+			});
+	
+			function aa() {
+				var a = document.getElementById("t_r_content").scrollTop;
+				var b = document.getElementById("t_r_content").scrollLeft;
+				document.getElementById("cl_freeze").scrollTop = a;
+				document.getElementById("t_r_t").scrollLeft = b;
+			}	
+		</script>
+	</body>
+
+</html>

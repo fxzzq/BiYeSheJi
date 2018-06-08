@@ -1,0 +1,50 @@
+@charset "UTF-8";
+.container {
+	max-width: 100%;
+	padding-right: 20px;
+	padding-bottom :20px;
+}
+.container .row{
+    background-color: #fff;
+    margin-right: 0px;
+    margin-left: 0px;
+}
+#queryForm{
+	padding-top:20px;
+}
+.container .row:nth-child(2){
+	margin-top:0px !important;
+    padding-top:10px !important;
+}
+.container .row:nth-child(3){
+	margin-top:0px !important;
+    padding-top:10px !important;
+}
+.datatable{
+	border:1px solid #ececec;
+	border-radius: 5px;
+}
+.menu>.nav>li>.nav {
+    background-color: #fff;
+}
+.nav>li>a {
+    color: #fff;
+}
+.nav>li>a>i {
+    color: #fff !important;
+    margin-left:2px;
+}
+.nav-primary>li>a:hover i{
+	color:#3dc0cc !important;
+}
+.nav-primary>li.active>a>i{
+	color:#3dc0cc !important;
+}
+.hexagon{
+	height:40px;
+	position:absolute;
+	width:40px;
+	background-size: cover;
+	top:10px;
+	left:-20px;
+}

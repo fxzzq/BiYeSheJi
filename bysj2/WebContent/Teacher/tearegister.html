@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en" class="no-js">
+<head>
+<meta charset="UTF-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge"> 
+<meta name="viewport" content="width=device-width, initial-scale=1"> 
+<title>教师注册</title>
+	<!--<link href="_1/lib/mui/css/mui.min.css" rel="stylesheet" /> -->
+		<link href="../_1/lib/mui/css/mui.picker.css" rel="stylesheet" />
+		<link href="../_1/lib/mui/css/mui.poppicker.css" rel="stylesheet" />
+		<link rel="stylesheet" type="text/css" href="../Student/css/logincss/normalize.css" />
+		<link rel="stylesheet" type="text/css" href="../Student/css/logincss/demo.css" />
+		<!--必要样式-->
+		<link rel="stylesheet" type="text/css" href="../Student/css/logincss/component.css" />
+	    <link href="../Student/css/MistakesCollection.css" rel="stylesheet"/>
+	    <script src="../_1/lib/mui/js/mui.min.js"></script>
+	    <script src="../_1/lib/mui/js/mui.picker.js"></script>
+		<script src="../_1/lib/mui/js/mui.poppicker.js"></script>
+  		<script type="text/javascript" src="../_1/lib/jquery-1.7.2.min.js"></script>
+		<script type="text/javascript" src="../_1/js/Outside.js"></script>
+		<script type="text/javascript" src="../_1/js/Overall.js"></script>
+		<script type="text/javascript" src="../_1/js/StorageKeys.js"></script>
+<!--[if IE]>
+<script src="js/html5.js"></script>
+<![endif]-->
+<style type="text/css">
+
+	#spanLen {
+		width: 25px;
+	    height: 25px;
+	    color:#eee;
+	    background-position: -125px -34px;
+	    position: absolute;
+	    margin: 42px 140px;
+	}
+	
+	#pswInfo {
+		width: 104px;
+	    height: 25px;
+	    color: #c41a15;
+	    background-position: -125px -34px;
+	    position: absolute;
+	    margin: 42px 140px;
+	}
+	.text1 {
+	    width: 220px;
+	    height: 46px;
+	    outline: none;
+	    display: inline-block;
+	    font: 14px "microsoft yahei",Helvetica,Tahoma,Arial,"Microsoft jhengHei";
+	    margin-left: 50px;
+	    border: none;
+	    background: none;
+	    line-height: 46px;
+	}
+	.us_uer1 {
+	    width: 25px;
+	    height: 25px;
+	    background-image: url(../Student/img/login_ico.png);
+	    background-position: -124px -211px;
+	    position: absolute;
+	    margin: 10px 13px;
+	}
+
+
+
+</style>
+</head>
+<body>
+		<div class="container demo-1">
+			<div class="content">
+				<div id="large-header" class="large-header">
+					<canvas id="demo-canvas"></canvas>
+					<div class="logo_box">
+						<h3>智能随堂考试系统教师端</h3>
+						<form action="#" name="f" method="post" id="butn">
+							<div class="input_outer">
+								<span class="u_user"></span>
+								<input name="logname" class="text"  id="account" style="color: #FFFFFF !important" type="text" placeholder="请输入账户">
+							</div>
+							<div class="input_outer">
+								<span class="u_user"></span>
+								<input name="logname" class="text"  id="name" style="color: #FFFFFF !important" type="text" placeholder="请输入真实姓名">
+							</div>
+							<div class="input_outer">
+								<span class="us_uer"></span>
+								<input name="logpass" class="text" id="pwd" style="color: #FFFFFF !important; position:absolute; z-index:100;"value="" type="password" onkeyup="checkLength()" placeholder="请输入密码">
+							     <span id="spanLen"></span>
+							</div>
+							<div class="input_outer">
+								<span class="us_uer"></span>
+								<input name="logpass" class="text" id="pwd2" style="color: #FFFFFF !important; position:absolute; z-index:100;"value="" type="password" onblur="checkPSW()" placeholder="请再次输入密码">
+							    <span id="pswInfo" style="color: #c41a15;"></span>
+							</div>
+							<div class="input_outer">
+								<span class="us_uer1"></span>
+								<div   id="select1" >
+								 <input  class="text1" id='showUserPicker1' style="color: #FFFFFF !important; position:absolute; z-index:100;" value=""  type="text"  placeholder="请选择班级">
+							    <span id='userResult1' style="color: #00c89d;    margin-left: 119px"></span> 
+							    </div>
+							</div>
+							<div class="mb2">
+								<a class="act-but submit" href="javascript:;" style="color: #FFFFFF" id="btn">注册</a>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div><!-- /container -->
+		<script src="../Student/js/TweenLite.min.js"></script>
+		<script src="../Student/js/EasePack.min.js"></script>
+		<script src="../Student/js/rAF.js"></script>
+		<script src="../Student/js/demo-1.js"></script>
+		
+	<script type="text/javascript">
+	  /**
+     		    *检查密码长度
+        		*
+        		*/
+			  function checkLength(){  
+            var pwd=document.getElementById("pwd").value;  
+            var spanLen=document.getElementById("spanLen");  
+  
+  
+            if(pwd.length<=3&&pwd.length>0)  
+                spanLen.innerHTML="弱";  
+            else if(pwd.length<=6)  
+                spanLen.innerText="中";  
+            else  
+                spanLen.innerText="强";  
+  
+        }  
+        /**
+         *检查密码
+         *
+         */
+        function checkPSW(){  
+            var pwd1=document.getElementById("pwd").value;  
+            var pwd2=document.getElementById("pwd2").value;  
+            var pswInfo=document.getElementById("pswInfo");  
+            if(pwd1!=pwd2)  
+                pswInfo.innerText="两次密码不同";   // alert("两次密码不同");  
+            else  
+                pswInfo.innerText="";  
+        }
+		
+		
+		  
+           /**
+           *
+           *获取班级信息
+           *
+          */
+          var classid="";
+          var classname="";
+          mui.init();
+			(function($, doc) {
+				$.init();
+				$.ready(function() {
+					var _getParam = function(obj, param) {
+						return obj[param] || '';
+					};
+					var userPicker1 = new $.PopPicker();
+				/* 
+				 *获取班级信息
+				 */	
+				$.ajax("/bysj2/proj/examinations/getmyclass.action",{
+				type:"get",
+				async:false,
+				success:function(resp){	
+			    if(typeof(resp) == "string"){
+			        resp = JSON.parse(resp);
+			    }
+				var data = resp.data;
+				if(resp && resp.success&&data){
+		            var array = new Array();
+		            for(var i=0;i<data.length;i++){
+		                var a = new Object();
+		                a.value = i;
+		                a.text = data[i].name;
+		                array.push(a);
+		            }
+		            userPicker1.setData(array);
+				}
+				else{
+					if(resp.emsg){
+					
+						mui.toast(resp.emsg);
+					}
+						}
+				},
+				error:function(){
+				    	
+				    }
+			});
+					var showUserPickerButton1 = doc.getElementById('select1');
+					var userResult1 = doc.getElementById('userResult1');
+					showUserPickerButton1.addEventListener('tap', function(event) {
+						userPicker1.show(function(items) {
+							userResult1.innerText = items[0].text;
+							 classname =items[0].text;  //班级名称存入classname
+							  classid=items[0].value +1;
+							//  alert("classid:"+classid);
+						});
+					}, false);
+					
+					
+					
+						});
+			})(mui, document);
+					//不选择对错的情况  清空缓存
+					//storage.removeItem($LOCALKAY_STUDENT_MISTAKESQUERY_TYPE);
+            
+	 /**
+			 * 教师注册
+			 * 输入校验 
+			 */		
+			 var account="";
+		     var pwd="";
+		     var name="";
+			 	mui('#butn').on('tap','#btn',function(){
+			  account=document.getElementById("account").value; 
+			  name=document.getElementById("name").value;
+			  pwd=document.getElementById("pwd").value; 
+			 	$.ajax("/bysj2/proj/examinations/teaRegister.action",{
+					type:"post",
+					async:false,
+					cache:false,
+					dataType:"json",
+					data:{"account":account,"name":name,"pwd":pwd,"classid":classid},
+					success:function(resp){
+					  if(typeof(resp) == "string"){
+			        resp = JSON.parse(resp);
+			    }
+					var state = resp.success;
+					  if(state){
+					     //注册成功
+					  mui.toast("注册成功");   
+					  mui.openWindow({
+			  			url:'tealogin2.html'
+				 	 });
+					  }
+					  else{
+					  mui.toast(resp.emsg);
+					  mui.openWindow({
+			  			url:'tearegister.html'
+					  });
+					   }
+			 		},
+				    error:function(){
+				    	 mui.openWindow({
+			  			url:'tearegister.html'
+				 	 });
+				    }
+			}); 
+			});
+			
+        
+          
+	</script>
+	</body>
+</html>

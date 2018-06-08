@@ -1,0 +1,45 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!-- Generated 2018-5-11 21:40:32 by Hibernate Tools 3.5.0.Final -->
+<hibernate-mapping>
+    <class name="com.xzq.entity.Examquestions" table="EXAMQUESTIONS">
+        <id name="uuid" type="java.lang.String">
+            <column name="UUID" />
+            <generator class="assigned" />
+        </id>
+        <property name="creator" type="java.lang.String">
+            <column name="CREATOR" />
+        </property>
+        <property name="type" type="java.lang.String">
+            <column name="TYPE" />
+        </property>
+        <property name="stem" type="java.lang.String">
+            <column name="STEM" />
+        </property>
+        <property name="content" type="java.lang.String">
+            <column name="CONTENT" />
+        </property>
+        <property name="analysis" type="java.lang.String">
+            <column name="ANALYSIS" />
+        </property>
+        <property name="answer" type="java.lang.String">
+            <column name="ANSWER" />
+        </property>
+        <property name="multi" type="java.lang.Integer">
+            <column name="MULTI" />
+        </property>
+        <property name="total" type="java.lang.Integer">
+            <column name="TOTAL" />
+        </property>
+        <property name="wrongnum" type="java.lang.Integer">
+            <column name="WRONGNUM" />
+        </property>
+        <property name="rightnum" type="java.lang.Integer">
+            <column name="RIGHTNUM" />
+        </property>
+        <property name="rate" type="java.lang.Double">
+            <column name="RATE" />
+        </property>
+    </class>
+</hibernate-mapping>

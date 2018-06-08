@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en" class="no-js">
+<head>
+<meta charset="UTF-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge"> 
+<meta name="viewport" content="width=device-width, initial-scale=1"> 
+<title>教师登录</title>
+<link rel="stylesheet" type="text/css" href="../Student/css/logincss/normalize.css" />
+<link rel="stylesheet" type="text/css" href="../Student/css/logincss/demo.css" />
+<!--必要样式-->
+<link rel="stylesheet" type="text/css" href="../Student/css/logincss/component.css" />
+  <script type="text/javascript" src="../_1/lib/jquery-1.7.2.min.js"></script>
+		<script type="text/javascript" src="../_1/js/Outside.js"></script>
+		<script type="text/javascript" src="../_1/js/Overall.js"></script>
+		<script type="text/javascript" src="../_1/js/StorageKeys.js"></script>
+		<style type="text/css">
+		#btn2{
+		background:#00C89D;
+		}
+		</style>
+<!--[if IE]>
+<script src="js/html5.js"></script>
+<![endif]-->
+</head>
+<body>
+		<div class="container demo-1">
+			<div class="content">
+				<div id="large-header" class="large-header">
+					<canvas id="demo-canvas"></canvas>
+					<div class="logo_box">
+						<h3>智能随堂考试系统教师端</h3>
+						<form action="#" name="f" method="post" id="butn">
+							<div class="input_outer">
+								<span class="u_user"></span>
+								<input name="logname" class="text"  id="account" style="color: #FFFFFF !important" type="text" placeholder="请输入账户">
+							</div>
+							<div class="input_outer">
+								<span class="us_uer"></span>
+								<input name="logpass" class="text" id="pwd" style="color: #FFFFFF !important; position:absolute; z-index:100;"value="" type="password" placeholder="请输入密码">
+							</div>
+							<div class="mb2">
+								<a class="act-but submit" href="javascript:;" style="color: #FFFFFF" id="btn">登录</a>
+							</div>
+							<div class="mb2">
+								<a class="act-but submit" href="javascript:;" style="color: #FFFFFF" id="btn2">注册</a>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div><!-- /container -->
+		<script src="../Student/js/TweenLite.min.js"></script>
+		<script src="../Student/js/EasePack.min.js"></script>
+		<script src="../Student/js/rAF.js"></script>
+		<script src="../Student/js/demo-1.js"></script>
+		<script src="../_1/lib/mui/js/mui.min.js"></script>
+	<script>
+		mui.init();
+		var account="";
+		var pwd="";
+		   /**
+			 * 教师登录
+			 * 输入校验 
+			 */		
+			 	mui('#butn').on('tap','#btn',function(){
+			  account=document.getElementById("account").value; 
+			  pwd=document.getElementById("pwd").value; 
+			 	$.ajax("/bysj2/proj/examinations/teaLogin.action",{
+					type:"post",
+					async:false,
+					cache:false,
+					dataType:"json",
+					data:{"account":account,"pwd":pwd},
+					success:function(resp){
+					  if(typeof(resp) == "string"){
+			        resp = JSON.parse(resp);
+			    }
+					var state = resp.success;
+					  if(state){
+					  //存入缓存
+					  storage.setItem($LOCALKAY_TEACHER_USER,account);
+					  mui.openWindow({
+			  			url:'index.html'
+				 	 });
+					  }
+					  else{
+					  mui.toast(resp.emsg);
+					  mui.openWindow({
+			  			url:'tealogin2.html'
+					  });
+					   }
+			 		},
+				    error:function(){
+				    	 mui.openWindow({
+			  			url:'tealogin2.html'
+				 	 });
+				    }
+			}); 
+			});
+				mui('#butn').on('tap','#btn2',function(){
+				   mui.openWindow({
+			  			url:'tearegister.html'
+				 	 });
+				});
+	</script>
+	</body>
+</html>

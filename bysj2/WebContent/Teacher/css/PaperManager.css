@@ -1,0 +1,100 @@
+#seacher {
+	margin-top: 15px;
+	margin-right: 10px;
+	margin-left: 10px;
+}
+
+#listul {
+	font-weight: bold;
+}
+
+#butn{
+	position:fixed; 
+	bottom:-30px;
+	left: 1px;
+	right: 1px;
+}
+
+#btn1 {
+	width: 100%;
+	height: 44px;
+	margin: 30px auto;
+
+	color: #FFFFFF;
+	font-size: 18px;
+	font-weight: normal;
+	text-align: center;
+	 background:#00C89D 
+}
+
+.mui-btn {
+	display: block;
+}
+
+.listfont h4 {
+	color: #1F1F1F;
+	font-size: 15px;
+	font-weight: normal;
+}
+
+p {
+	color: #717171;
+}
+
+.mui-bar .mui-btn-link {
+	font-size: 16px;
+	line-height: 44px;
+	top: 0;
+	padding: 0;
+	color: #00C89D;
+	border: 0
+}
+
+.mui-table-view-cell:after {
+	position: absolute;
+	right: 0;
+	bottom: 0;
+	left: 0px;
+	height: 1px;
+	content: '';
+	-webkit-transform: scaleY(.5);
+	transform: scaleY(.5);
+	background-color: #c8c7cc
+}
+
+
+
+a {
+	text-decoration: none;
+	color: #00C89D
+}
+
+a:active {
+	color: #00C89D
+}
+
+input[type=search] {
+	font-size: 16px;
+	-webkit-box-sizing: border-box;
+	box-sizing: border-box;
+	height: 34px;
+	text-align: center;
+	border: 0;
+	border-radius: 6px;
+	background-color: #FFFFFF
+}
+
+.mui-title {
+	font-weight: bold;
+}
+
+.mui-pull-bottom-pocket,
+.mui-pull-top-pocket {
+	
+visibility:visible !important;
+	
+}
+
+.mui-table-view-chevron .mui-table-view-cell {
+	padding-right: 15px;
+}

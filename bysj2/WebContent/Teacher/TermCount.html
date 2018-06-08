@@ -1,0 +1,201 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>学期统计</title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../_1/lib/mui/css/mui.min.css" rel="stylesheet" />
+		<link href="css/TermCount.css" rel="stylesheet" />
+		<link href="../_1/lib/mui/css/mui.picker.css" rel="stylesheet" />
+		<link href="../_1/lib/mui/css/mui.poppicker.css" rel="stylesheet" />
+	    
+	    <script src="../_1/lib/mui/js/mui.min.js"></script>
+		<script src="../_1/lib/mui/js/mui.picker.js"></script>
+		<script src="../_1/lib/mui/js/mui.poppicker.js"></script>
+		<script type="text/javascript" src="../_1/lib/jquery-1.7.2.min.js"></script>
+		<script type="text/javascript" src="../_1/js/Outside.js"></script>
+		<script type="text/javascript" src="../_1/js/Overall.js"></script>
+		<script type="text/javascript" src="../_1/js/StorageKeys.js"></script>
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<button type="button" class="mui-left mui-action-back mui-btn  mui-btn-link mui-btn-nav mui-pull-left">
+					<span class="mui-icon mui-icon-left-nav"></span>返回
+				</button>
+			<h1 class="mui-title">学期统计</h1>
+		</header>
+		<div class="mui-content">
+			<ul id="uu" class="mui-table-view" >
+				<li class="mui-table-view-cell" id="select1" style="display:none;">
+					<span class="mui-navigate-right  " id='showUserPicker' class="mui-btn mui-btn-block" style="display:none;">
+						<span style="color: red;" style="display:none;">* </span>
+						<span id='userResult' class="mui-ellipsis  ui-alert formset" style="display:none;">		
+						</span>
+						<span id='termDate' style="display:none;" >
+						</span>
+					</span>
+				</li>
+				<li class="mui-table-view-cell" id="select2">
+					<span class="mui-navigate-right " id='showUserPicker1' class="mui-btn mui-btn-block">
+					<span style="color: red;">* </span>
+					班级
+					<span id='userResult1' class="mui-ellipsis ui-alert formset">
+					</span>
+					</span>
+				</li>
+			</ul>
+			<footer class="butn mui-content-padded" id="butn">
+				<button type="button" id="btn" class="meloclan-mui-btn mui-btn" >统计</button>
+			</footer>
+
+		</div>
+		<script>
+				mui.init();	
+			//首次加载默认的当前学期
+		    var  currentterm="";
+		    var  currentsdate="";
+		    var  currentedate="";	
+			(function($, doc) {
+				$.init();
+				$.ready(function() {
+
+					var _getParam = function(obj, param) {
+						return obj[param] || '';
+					};
+					
+					//学期列表获取
+					var userPicker = new $.PopPicker();
+						$.ajax("/bysj2/proj/examinations/getterms.action",{
+				type:"get",
+				async:false,
+				success:function(resp){	
+			    if(typeof(resp) == "string"){
+			       resp = JSON.parse(resp);
+			    }
+				var data = resp.data;
+				
+				if(resp && resp.success&&data){
+		            var array = new Array();
+		            
+		            for(var i=0;i<data.length;i++){
+		                if(data[i].iscurrent=="true"){
+		                currentterm=data[i].name;
+		                currentsdate=data[i].sdate;
+		                currentedate=data[i].edate;
+		                }
+		                var a = new Object();
+		                a.value = data[i].sdate+ data[i].edate;
+		                a.text = data[i].name;
+		                
+		                array.push(a);
+		            }
+		            userPicker.setData(array);
+				}
+				else{
+					if(resp.emsg){
+						mui.toast(resp.emsg);
+					}
+						}
+				},
+				error:function(){
+				    	
+				    }
+			});
+			 
+					var showUserPickerButton = doc.getElementById('select1');
+					var userResult = doc.getElementById('userResult');
+			        //默认当前学期
+			          userResult.innerText=currentterm;
+			        //默认存入缓存
+			          storage.setItem($LOCALKAY_TEACHER_TERM_NAME,currentterm);
+					  storage.setItem($LOCALKAY_TEACHER_TERM_SDATE,currentsdate);
+					  storage.setItem($LOCALKAY_TEACHER_TERM_EDATE,currentedate);
+					showUserPickerButton.addEventListener('tap', function(event) {
+						userPicker.show(function(items) {
+						    
+							userResult.innerText = items[0].text;
+						
+							//学期名称
+						var	termname=userResult.innerText;
+							storage.setItem($LOCALKAY_TEACHER_TERM_NAME,termname);
+							//学期开始
+						var	sdate=items[0].value.substr(0,10);
+							storage.setItem($LOCALKAY_TEACHER_TERM_SDATE,sdate);
+							//学期结束
+						var	edate=items[0].value.substr(10,20);
+							storage.setItem($LOCALKAY_TEACHER_TERM_EDATE,edate);
+
+							
+						});
+					}, false);
+
+					var userPicker1 = new $.PopPicker();
+					//获取班级列表
+					$.ajax("/bysj2/proj/examinations/getmyclass.action",{
+				type:"get",
+				async:false,
+				success:function(resp){	
+			    if(typeof(resp) == "string"){
+			        resp = JSON.parse(resp);
+			    }
+				var data = resp.data;
+				if(resp && resp.success&&data){
+		            var array = new Array();
+		            for(var i=0;i<data.length;i++){
+		                var a = new Object();
+		                a.value = data[i].id;
+		                a.text = data[i].name;
+		                array.push(a);
+		            }
+	                userPicker1.setData(array);
+				}
+				else{
+					if(resp.emsg){
+					
+						mui.toast(resp.emsg);
+					}
+						}
+				},
+				error:function(){
+				    	
+				    }
+			});
+					
+					var showUserPickerButton1 = doc.getElementById('select2');
+					var userResult1 = doc.getElementById('userResult1');
+					
+					showUserPickerButton1.addEventListener('tap', function(event) {
+						userPicker1.show(function(items) {
+							userResult1.innerText = items[0].text;
+						    
+						     //班级名
+						  var   classname=userResult1.innerText;
+						 storage.setItem($LOCALKAY_TEACHER_CLASS_CLASSNAME,classname);
+						    //班级id
+ 						    var classid=items[0].value;
+							storage.setItem($LOCALKAY_TEACHER_CLASS_CLASSID,classid);
+						
+						});
+					}, false);
+
+				});
+			})(mui, document);
+			mui('#butn').on('tap','#btn',function(){
+			  //前端校验
+			  var userResult1 = document.getElementById('userResult1');
+			   if((userResult1.innerText==null)||(userResult1.innerText=="")){
+			  mui.toast("班级未选择");
+			   return false;
+			   }else{
+			     mui.openWindow({
+			  	url:'TermCountDetails_2.html'
+			  	});
+			  	return true;
+			   }
+			   });	
+		</script>
+
+	</body>
+
+</html>

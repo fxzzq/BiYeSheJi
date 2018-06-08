@@ -1,0 +1,47 @@
+*{
+	margin: 0;
+	padding: 0;
+}
+#menu{
+	/*width: 33%;*/
+	
+}
+
+#menubtn{
+	width: 125px;
+	height: 90px;
+}
+#menubtn p{
+	
+	font-family: "寰蒋闆呴粦";
+	font-size: 15px;
+	font-weight: bold;
+}
+#menubtn img{
+	
+
+}
+#muirow{
+	margin:15px 15px ;
+}
+
+#tabbar{
+	margin-top: 15px;
+	margin-left: 15px;
+	margin-right: 15px;
+/*	margin-bottom: 15px;*/
+}
+a {
+	text-decoration: none;
+	color: #2E9134
+}
+a:active {
+	color: #2E9134
+}
+.mui-title{
+	font-weight: bold;
+}
+
+ul>li{
+	background:#fff !important;
+}

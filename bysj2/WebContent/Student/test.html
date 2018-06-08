@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+</head>
+<body>
+<script>
+var str= "mozilla/5.0 (iphone; cpu iphone os 11_0_3 like mac os x) applewebket/604.1.38(khtml,like gecko) mobile/15a432)"; 
+var ver=str.match(/ os (\d+)\_(\w+) like/);
+if(!ver){
+    alert("请在Ios系统中打开");
+}else{
+	var version = ver[1].replace(/_/g,".");
+	if(version < 9){
+		alert("你当前的Ios系统版本为："+version);
+	}
+    
+}
+</script>
+</body>
+</html>

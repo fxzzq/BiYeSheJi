@@ -1,0 +1,126 @@
+#title{
+	background: #FFFFFF;
+}
+.tablestyle{
+	width: 100%;
+}
+
+#xzq {
+	font: "微软雅黑";
+	font-size: 18px;
+	color: #1F1F1F;
+	text-align: center;
+	font-weight: normal;
+	margin-top: 1px;
+	padding-top: 30px;
+	padding-bottom: 20px;
+}
+#xzq1{
+	font: "微软雅黑";
+	font-size: 18px;
+	color: red;
+	text-align: center;
+	font-weight: normal;
+	margin-top: 1px;
+	
+}
+
+.mui-bar .mui-btn-link {
+	font-size: 16px;
+	line-height: 44px;
+	top: 0;
+	padding: 0;
+	color: #00C89D;
+	border: 0
+}
+
+body {
+	background: #FFFFFF;
+}
+
+
+a {
+	text-decoration: none;
+	color: #00C89D
+}
+
+a:active {
+	color: #00C89D
+}
+
+.mui-title {
+	font-weight: bold;
+}
+
+table {
+	border-collapse: collapse;
+	border-spacing: 0px;
+	width: 100%;
+}
+
+table td {
+	border: 1px solid #ccc;
+	height: 33px;
+	text-align: center;
+	border-left: 0px;
+	
+}
+
+table th {
+	background: #00C89D;
+	color: #fff;
+	border-right: #ccc solid 1px;
+	white-space: nowrap;
+	height: 37px;
+	border-top: 0px;
+	border-left: 0px;
+	
+}
+table tr {
+	padding:0px 5px;
+}
+.rightnameTP th{
+    padding:0px 10px;	
+}
+
+.t_left {
+	width: 115px;
+	float: left;
+}
+
+.t_r_content {
+	width: 100%;
+	height: 100%;
+	background: #fff;
+	overflow: auto;
+}
+
+t_r_content table td{
+	width: 40px;
+}
+
+.cl_freeze {
+	
+	height: 100%;
+	overflow: hidden;
+	width: 100%;
+}
+
+.t_r {
+	width: calc(100% - 115px);
+	height: auto;
+	float: left;
+}
+
+t_r_title table th{
+	width: 40px;
+}
+
+.t_r_t {
+	width: 100%;
+	overflow: hidden;
+}
+
+.bordertop {
+	border-top: 0px;
+}

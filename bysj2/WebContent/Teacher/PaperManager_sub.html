@@ -1,0 +1,343 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>试题列表</title>
+<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+<link href="../_1/lib/mui/css/mui.min.css" rel="stylesheet" />
+<link href="css/PaperManager.css" rel="stylesheet" />
+<script src="../_1/lib/mui/js/mui.min.js"></script>
+<script type="text/javascript" src="../_1/lib/jquery-1.7.2.min.js"></script>
+<script type="text/javascript" src="../_1/js/Outside.js"></script>
+<script type="text/javascript" src="../_1/js/StorageKeys.js"></script>
+<style type="text/css">
+.mui-pull-bottom-pocket,.mui-pull-top-pocket {
+	visibility: visible !important;
+}
+</style>
+</head>
+<body>
+	<div id="pullrefresh" class="mui-content mui-scroll-wrapper">
+		<div class="mui-scroll">
+			<div class="mui-input-row mui-search" id="seacher">
+				<input type="search" class="mui-input-clear" id="input" placeholder="搜索">
+			</div>
+			<ul id="OA_task_2" class="mui-table-view mui-table-view-striped mui-table-view-condensed">
+								
+			</ul>
+		</div>
+	</div>
+	<script>
+		var start = cstart;
+		var  value="";
+		var pulldownstart=cstart;
+		var pullupstart=cstart;
+		$("#input").keydown(function(e){		
+  		 if(e.keyCode == 13){ 
+  		 start = cstart;
+  		 }
+		});
+		      /**
+			 * 页面数据加载   自动加载一次
+			 */
+			  $(function(){
+  			$.ajax("/bysj2/proj/examinations/getmypaperlist.action",{
+					type:"get",
+					async:false,
+					dataType:"json",
+					data:{"start":cstart,"limit":overall_limit_size,"keyword":value,"istotal":false},
+					success:function(resp){
+						var data = resp.data;
+						if(resp && resp.success && data){
+						start+=data.length;
+							$(".mui-table-view").empty();
+							var html = "";
+							$.each(data,function(i,v){
+							html+=("<li class='mui-table-view-cell picker"+"'uuid='"+v.uuid+"'>"+
+						           "<div class='mui-slider-right mui-disabled'>"+
+							       "<a class='mui-btn mui-btn-red' id='btn'>删除</a>"+
+					               "</div>"+
+						           "<div class='mui-slider-handle mui-table'>"+
+							       "<div class='mui-table-cell mui-col-xs-12 listfont'>"+
+								   "<h4 class='mui-ellipsis'>"+v.name+"</h4>"+
+								   "<p class='mui-ellipsis'>"+v.type+
+								   "</p></div></div></li>");
+							  
+							});
+							$(".mui-table-view").append(html);
+						}
+						else{
+							if(resp.emsg){
+								mui.toast(resp.emsg);
+							}
+						}
+					},
+				    error:function(){
+				    	
+				    }
+				});
+		
+			});
+		      
+		
+		
+		   /**
+			 * 跳转至试卷详情页面
+			 */
+		
+		mui('.mui-table-view').on('tap', '.mui-table-view-cell', function() {
+				var uuid = $(this).attr("uuid");
+				var url = 'Paper.html';
+				
+				storage.setItem($LOCALKAY_TEACHER_PAPERMANAGER_UUID,uuid);
+				
+				mui.openWindow({
+
+					url: 'Paper.html'
+
+			
+
+				});
+			});	
+		
+
+
+        	
+           /**
+			 * 删除试卷
+			 */
+		 (function($) { 
+			 	$('#OA_task_2').on('tap', '.mui-btn', function(event) {	 
+					var elem = this;
+					var li = elem.parentNode.parentNode;
+					var uuid = this.parentNode.parentNode.getAttribute('uuid');
+					//alert(uuid);
+					mui.confirm('确认删除这套试卷？', '', btnArray, 
+					function(e) {
+						if(e.index == 0) {
+						li.parentNode.removeChild(li);
+  			$.ajax("/bysj2/proj/examinations/delpaper.action",{
+					type:"post",
+					async:false,
+					data:{"uuid":uuid},
+					success:function(resp){					
+						if(resp && resp.success && data){
+	
+							mui.toast(resp.emsg);
+							
+							
+						}
+						else{
+							if(resp.emsg){
+							
+								mui.toast(resp.emsg);
+							}
+						}
+					},
+				    error:function(){
+				    	
+				    }
+				});
+	
+							
+						} else {
+							setTimeout(function() {
+								$.swipeoutClose(li);
+							}, 0);
+						}
+					});
+				}); 
+				var btnArray = ['确认', '取消'];
+		 	})(mui); 
+	
+		
+
+		   /**
+			 * 下拉刷新 上拉加载
+			 */
+			mui.init({
+				pullRefresh: {
+					container: '#pullrefresh',
+					down: {
+						contentdown: "下拉可以刷新", 
+						contentover: "释放立即刷新", 
+						contentrefresh: "正在刷新...",
+						//auto:true,
+						callback: pulldownRefresh
+					},
+					up: {
+					height: 100, //距离底部高度(到达该高度即触发)
+				
+					contentinit: '上拉显示更多',
+					contentdown: '上拉显示更多',
+					contentrefresh: '正在加载...',
+					contentnomore: '没有更多数据了',
+					callback: pullupRefresh
+					}
+				}
+			});
+			
+			/**
+			 * 下拉刷新具体业务实现
+			 */
+			function pulldownRefresh() {
+			mui('#pullrefresh').pullRefresh().refresh(true);
+			console.log("下拉");
+				setTimeout(function() {
+				value=document.getElementById("input").value;
+				$.ajax("/bysj2/proj/examinations/getmypaperlist.action",{
+					type:"get",
+					async:false,
+					dataType:"json",
+					data:{"start":cstart,"limit":overall_limit_size,"keyword":value,"istotal":false},
+					success:function(resp){
+						var data = resp.data;
+						
+						if(resp && resp.success && data){
+						start=data.length;
+						
+							$(".mui-table-view").empty();
+							var html = "";
+							$.each(data,function(i,v){
+							html+=("<li class='mui-table-view-cell picker"+"'uuid='"+v.uuid+"'>"+
+						           "<div class='mui-slider-right mui-disabled'>"+
+							       "<a class='mui-btn mui-btn-red' id='btn'>删除</a>"+
+					               "</div>"+
+						           "<div class='mui-slider-handle mui-table'>"+
+							       "<div class='mui-table-cell mui-col-xs-12 listfont'>"+
+								   "<h4 class='mui-ellipsis'>"+v.name+"</h4>"+
+								   "<p class='mui-ellipsis'>"+v.type+
+								   "</p></div></div></li>");
+							  
+							});
+							$(".mui-table-view").append(html);
+						}
+						else{
+							if(resp.emsg){
+								mui.toast(resp.emsg);
+							}
+						}
+						
+				/*上拉前下拉清空start  */
+			//	pulldownstart=cstart;
+			//	alert(start);
+					},
+				    error:function(){
+				    	
+				    }
+				});
+	      
+					mui('#pullrefresh').pullRefresh().endPulldownToRefresh();
+					mui('#pullrefresh').pullRefresh().endPullupToRefresh(false);
+				}, 1500);
+			}
+			var count = 0;
+			/**
+			 * 上拉加载具体业务实现
+			 */
+			
+			function pullupRefresh() {	
+					
+				setTimeout(function() {		
+						console.log("上拉");
+				$.ajax("/bysj2/proj/examinations/getmypaperlist.action",{
+					type:"get",
+					async:false,
+					dataType:"json",
+					data:{"start":start,"limit":overall_limit_size,"keyword":value,"istotal":false},
+					success:function(resp){
+						var data = resp.data;
+						if(resp && resp.success && data){
+						start+=data.length;
+						
+						pullupstart=start;
+						//alert(pullupstart);
+					   //alert("外："+data.length);
+					  //alert("外："+start);	
+							var html = "";
+							$.each(data,function(i,v){
+							html+=("<li class='mui-table-view-cell picker"+"'uuid='"+v.uuid+"'>"+
+						           "<div class='mui-slider-right mui-disabled'>"+
+							       "<a class='mui-btn mui-btn-red' id='btn'>删除</a>"+
+					               "</div>"+
+						           "<div class='mui-slider-handle mui-table'>"+
+							       "<div class='mui-table-cell mui-col-xs-12 listfont'>"+
+								   "<h4 class='mui-ellipsis'>"+v.name+"</h4>"+
+								   "<p class='mui-ellipsis'>"+v.type+
+								   "</p></div></div></li>");
+							  
+							});
+							$(".mui-table-view").append(html);
+							mui('#pullrefresh').pullRefresh().endPullupToRefresh(((data.length<overall_limit_size)||data.length==0)	);		
+															
+						}
+						else{
+							if(resp.emsg){
+								mui.toast(resp.emsg);
+							}
+						}
+					},
+				    error:function(){				    	
+				    }
+				});
+				}, 1500);
+				
+			}
+			
+		   /**
+			 * 试题管理 搜索
+			 */		
+		$("#input").keydown(function(e){		
+  		 if(e.keyCode == 13){   		 
+  		  value=document.getElementById("input").value;  		
+  			$.ajax("/bysj2/proj/examinations/getmypaperlist.action",{
+					type:"post",
+					async:false,
+					dataType:"json",
+					data:{"start":cstart,"limit":overall_limit_size,"keyword":value,"istotal":false},
+					success:function(resp){
+						var data = resp.data;
+						if(resp && resp.success && data){
+						//alert("回车前"+start);
+						start+=data.length;
+						//alert("回车后"+start);
+						//start=cstart;
+							$(".mui-table-view").empty();
+							var html = "";
+							$.each(data,function(i,v){
+							html+=("<li class='mui-table-view-cell picker"+"'uuid='"+v.uuid+"'>"+
+						           "<div class='mui-slider-right mui-disabled'>"+
+							       "<a class='mui-btn mui-btn-red' id='btn'>删除</a>"+
+					               "</div>"+
+						           "<div class='mui-slider-handle mui-table'>"+
+							       "<div class='mui-table-cell mui-col-xs-12 listfont'>"+
+								   "<h4 class='mui-ellipsis'>"+v.name+"</h4>"+
+								   "<p class='mui-ellipsis'>"+v.type+
+								   "</p></div></div></li>");							  
+							});
+							$(".mui-table-view").append(html);
+						}
+						else{
+							if(resp.emsg){
+								mui.toast(resp.emsg);
+							}
+						}
+					},
+				    error:function(){				    	
+				    }
+				});
+			mui('.mui-table-view').on('tap', '.mui-table-view-cell', function() {
+				var uuid = $(this).attr("uuid");				
+				var url = 'test.html';				
+				storage.setItem($LOCALKAY_TEACHER_PAPERMANAGER_UUID,uuid);			
+				mui.openWindow({
+					url: 'Paper.html'
+				});
+			});		
+  		} 		
+  		});
+		</script>
+
+</body>
+
+</html>
